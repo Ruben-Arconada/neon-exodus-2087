@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NEON EXODUS">
+<meta name="theme-color" content="#0a0014">
+<meta name="description" content="NEON EXODUS 2087 — Arcade synthwave de acción. Neo-Madrid, 2087. Un runner contra la IA MADRE.">
+<title>NEON EXODUS 2087</title>
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'&gt;&lt;rect width='16' height='16' fill='%230a0014'/&gt;&lt;path d='M3 13 8 3l5 10' stroke='%23ff2bd6' stroke-width='2' fill='none'/&gt;&lt;/svg&gt;">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="game"></canvas>
+
+  <!-- Capa CRT (dirección de arte: scanlines + viñeta + parpadeo) -->
+  <div id="crt" aria-hidden="true">
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="flicker"></div>
+  </div>
+
+  <!-- HUD durante partida -->
+  <div id="hud" class="hidden" aria-hidden="true">
+    <div id="hud-top">
+      <div id="hud-left">
+        <div id="hud-score">000000</div>
+        <div id="hud-combo"></div>
+      </div>
+      <div id="hud-center">
+        <div id="hud-sector"></div>
+        <div id="hud-wave"></div>
+      </div>
+      <div id="hud-right">
+        <button id="btn-pause" type="button">II</button>
+      </div>
+    </div>
+    <div id="hud-bottom">
+      <div id="hud-hp"><div id="hud-hp-fill"></div></div>
+      <div id="hud-power"></div>
+    </div>
+    <div id="boss-bar" class="hidden"><span id="boss-name">M.A.D.R.E.</span><div id="boss-hp"><div id="boss-hp-fill"></div></div></div>
+  </div>
+
+  <!-- Pantallas DOM (UX: texto nítido fuera del canvas) -->
+  <div id="screen-boot" class="screen">
+    <pre id="boot-text"></pre>
+  </div>
+
+  <div id="screen-title" class="screen hidden">
+    <div class="title-wrap">
+      <div id="title-logo">
+        <span class="t-neon">NEON</span>
+        <span class="t-exodus">EXODUS</span>
+        <span class="t-year">2 0 8 7</span>
+      </div>
+      <div id="title-sub">UN ARCADE DE ESTUDIO SIETE//SIETE</div>
+      <div class="menu" id="title-menu">
+        <button class="mbtn" id="m-start" type="button">▶ INICIAR CONEXIÓN</button>
+        <button class="mbtn" id="m-howto" type="button">CÓMO JUGAR</button>
+        <button class="mbtn" id="m-options" type="button">OPCIONES</button>
+        <button class="mbtn" id="m-credits" type="button">CRÉDITOS</button>
+      </div>
+      <div id="title-hiscore"></div>
+      <div id="title-hint">INSERT COIN · 1987 → 2087</div>
+    </div>
+  </div>
+
+  <div id="screen-howto" class="screen hidden">
+    <h2 class="sc-h">CÓMO JUGAR</h2>
+    <div class="sc-body">
+      <p><b class="c-cyan">MOVER</b> — pulgar izquierdo (joystick virtual) o WASD.</p>
+      <p><b class="c-magenta">APUNTAR / DISPARAR</b> — pulgar derecho (joystick) o ratón. Si no apuntas, VEGA dispara sola al enemigo más cercano.</p>
+      <p><b class="c-yellow">DASH</b> — toca dos veces el lado izquierdo o pulsa ESPACIO. Eres invulnerable durante el impulso.</p>
+      <p><b class="c-green">MEJORAS</b> — recoge los hexágonos: <span class="c-cyan">T</span> triple, <span class="c-yellow">R</span> rápido, <span class="c-green">E</span> escudo, <span class="c-red">B</span> bomba, <span class="c-magenta">L</span> tiempo-bala, <span class="c-white">+</span> vida.</p>
+      <p><b class="c-white">COMBO</b> — encadena bajas sin recibir daño para multiplicar puntos.</p>
+      <p class="dim">Consejo de QA: juega con sonido y, en móvil, gira a horizontal si quieres más campo de visión. Añádelo a tu pantalla de inicio para jugar a pantalla completa.</p>
+    </div>
+    <button class="mbtn back" data-back type="button">◀ VOLVER</button>
+  </div>
+
+  <div id="screen-options" class="screen hidden">
+    <h2 class="sc-h">OPCIONES</h2>
+    <div class="sc-body">
+      <button class="mbtn opt" id="o-music" type="button">MÚSICA: SÍ</button>
+      <button class="mbtn opt" id="o-sfx" type="button">EFECTOS: SÍ</button>
+      <button class="mbtn opt" id="o-crt" type="button">FILTRO CRT: SÍ</button>
+      <button class="mbtn opt" id="o-shake" type="button">VIBRACIÓN PANTALLA: SÍ</button>
+      <button class="mbtn opt" id="o-wipe" type="button">BORRAR RÉCORDS</button>
+    </div>
+    <button class="mbtn back" data-back type="button">◀ VOLVER</button>
+  </div>
+
+  <div id="screen-credits" class="screen hidden">
+    <h2 class="sc-h">ESTUDIO SIETE//SIETE</h2>
+    <div class="sc-body credits" id="credits-body"></div>
+    <button class="mbtn back" data-back type="button">◀ VOLVER</button>
+  </div>
+
+  <!-- Terminal narrativo -->
+  <div id="screen-story" class="screen hidden">
+    <div id="story-term">
+      <div id="story-head">RED NEURAL HELIOS — CANAL PIRATA 7.7</div>
+      <div id="story-speaker"></div>
+      <div id="story-text"></div>
+      <div id="story-next">▼ TOCA PARA CONTINUAR</div>
+    </div>
+  </div>
+
+  <div id="screen-pause" class="screen hidden">
+    <h2 class="sc-h">PAUSA</h2>
+    <div class="menu">
+      <button class="mbtn" id="p-resume" type="button">REANUDAR</button>
+      <button class="mbtn" id="p-restart" type="button">REINICIAR SECTOR</button>
+      <button class="mbtn" id="p-quit" type="button">ABANDONAR MISIÓN</button>
+    </div>
+  </div>
+
+  <div id="screen-gameover" class="screen hidden">
+    <h2 class="sc-h c-red">SEÑAL PERDIDA</h2>
+    <div class="sc-body center">
+      <p id="go-flavor" class="dim"></p>
+      <p>PUNTUACIÓN <b id="go-score" class="c-yellow">0</b></p>
+      <p id="go-record" class="c-magenta hidden">★ NUEVO RÉCORD ★</p>
+    </div>
+    <div class="menu">
+      <button class="mbtn" id="go-retry" type="button">RECONECTAR (REINTENTAR SECTOR)</button>
+      <button class="mbtn" id="go-title" type="button">VOLVER AL TÍTULO</button>
+    </div>
+  </div>
+
+  <div id="screen-victory" class="screen hidden">
+    <h2 class="sc-h c-cyan">AMANECER ANALÓGICO</h2>
+    <div class="sc-body center">
+      <p>PUNTUACIÓN FINAL <b id="v-score" class="c-yellow">0</b></p>
+      <p id="v-record" class="c-magenta hidden">★ NUEVO RÉCORD ★</p>
+      <p class="dim">Gracias por jugar. — Estudio Siete//Siete</p>
+    </div>
+    <div class="menu">
+      <button class="mbtn" id="v-credits" type="button">VER CRÉDITOS</button>
+      <button class="mbtn" id="v-title" type="button">VOLVER AL TÍTULO</button>
+    </div>
+  </div>
+
+  <div id="rotate-hint" class="hidden">▶ También puedes girar el móvil ◀</div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/input.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/story.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
