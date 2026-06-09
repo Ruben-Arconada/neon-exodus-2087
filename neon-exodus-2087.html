@@ -1,0 +1,2950 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NEON EXODUS">
+<meta name="theme-color" content="#0a0014">
+<meta name="description" content="NEON EXODUS 2087 — Arcade synthwave de acción. Neo-Madrid, 2087. Un runner contra la IA MADRE.">
+<title>NEON EXODUS 2087</title>
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'&gt;&lt;rect width='16' height='16' fill='%230a0014'/&gt;&lt;path d='M3 13 8 3l5 10' stroke='%23ff2bd6' stroke-width='2' fill='none'/&gt;&lt;/svg&gt;">
+<style>
+/* ============================================================
+   NEON EXODUS 2087 — hoja de estilos
+   Dirección de arte: paleta neón sobre negro-violeta, CRT vivo
+   ============================================================ */
+
+:root {
+  --bg: #0a0014;
+  --magenta: #ff2bd6;
+  --cyan: #19e6ff;
+  --yellow: #ffd319;
+  --green: #2bff88;
+  --red: #ff3b3b;
+  --violet: #8a2bff;
+  --white: #f4f0ff;
+  --font: "Courier New", ui-monospace, Menlo, monospace;
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  position: fixed;
+  inset: 0;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#stage { position: absolute; inset: 0; font-family: var(--font); color: var(--white); }
+
+#game { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: var(--bg); }
+
+.hidden { display: none !important; }
+
+/* ---------- CRT ---------- */
+#crt { position: absolute; inset: 0; pointer-events: none; z-index: 40; }
+#crt .scanlines {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px,
+    rgba(0,0,0,0.22) 3px, rgba(0,0,0,0.22) 4px
+  );
+  mix-blend-mode: multiply;
+}
+#crt .vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(5,0,15,0.55) 100%);
+}
+#crt .flicker {
+  position: absolute; inset: 0;
+  background: rgba(180,160,255,0.03);
+  animation: flick 0.12s infinite alternate;
+}
+@keyframes flick { from { opacity: 0.4; } to { opacity: 1; } }
+.no-crt #crt { display: none; }
+
+/* ---------- Pantallas ---------- */
+.screen {
+  position: absolute; inset: 0; z-index: 30;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: calc(20px + var(--sat)) calc(16px + var(--sar)) calc(20px + var(--sab)) calc(16px + var(--sal));
+  background: rgba(8, 0, 18, 0.78);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  text-align: center;
+}
+
+.sc-h {
+  font-size: clamp(22px, 6vw, 42px);
+  letter-spacing: 0.35em;
+  margin-bottom: 18px;
+  color: var(--cyan);
+  text-shadow: 0 0 8px var(--cyan), 0 0 30px rgba(25,230,255,0.5);
+}
+.sc-body { max-width: 640px; line-height: 1.65; font-size: clamp(13px, 3.4vw, 16px); }
+.sc-body p { margin: 9px 0; }
+.sc-body.center { text-align: center; font-size: clamp(15px, 4vw, 19px); }
+.dim { opacity: 0.65; font-size: 0.88em; }
+
+.c-cyan { color: var(--cyan); } .c-magenta { color: var(--magenta); }
+.c-yellow { color: var(--yellow); } .c-green { color: var(--green); }
+.c-red { color: var(--red); } .c-white { color: var(--white); }
+
+/* ---------- Boot ---------- */
+#screen-boot { justify-content: flex-start; align-items: flex-start; background: #050009; cursor: pointer; }
+#boot-text {
+  font-family: var(--font);
+  color: var(--green);
+  text-shadow: 0 0 6px rgba(43,255,136,0.7);
+  font-size: clamp(11px, 2.9vw, 15px);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+/* ---------- Título ---------- */
+#screen-title { background: transparent; }
+.title-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+#title-logo { display: flex; flex-direction: column; line-height: 1.02; transform: perspective(300px) rotateX(12deg); }
+.t-neon {
+  font-size: clamp(46px, 14vw, 110px); font-weight: bold; letter-spacing: 0.12em;
+  color: var(--magenta);
+  text-shadow: 0 0 10px var(--magenta), 0 0 42px rgba(255,43,214,0.75), 0 0 90px rgba(255,43,214,0.4);
+  animation: neonpulse 2.4s ease-in-out infinite;
+}
+.t-exodus {
+  font-size: clamp(40px, 12vw, 95px); font-weight: bold; letter-spacing: 0.22em;
+  color: var(--cyan);
+  text-shadow: 0 0 10px var(--cyan), 0 0 42px rgba(25,230,255,0.7);
+}
+.t-year {
+  margin-top: 8px; font-size: clamp(16px, 4.6vw, 28px); letter-spacing: 0.8em;
+  color: var(--yellow); text-shadow: 0 0 12px rgba(255,211,25,0.8);
+}
+@keyframes neonpulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.86; }
+  92% { opacity: 0.55; }
+}
+#title-sub { font-size: clamp(10px, 2.6vw, 13px); letter-spacing: 0.4em; opacity: 0.7; }
+#title-hiscore { color: var(--yellow); font-size: clamp(12px, 3vw, 15px); letter-spacing: 0.2em; }
+#title-hint { opacity: 0.5; font-size: clamp(10px, 2.6vw, 13px); letter-spacing: 0.3em; animation: blink 1.2s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0.1; } }
+
+/* ---------- Menús ---------- */
+.menu { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; width: min(86vw, 420px); }
+.mbtn {
+  font-family: var(--font);
+  font-size: clamp(14px, 3.8vw, 17px);
+  letter-spacing: 0.18em;
+  padding: 13px 18px;
+  background: rgba(20, 4, 40, 0.85);
+  color: var(--white);
+  border: 1px solid var(--violet);
+  box-shadow: 0 0 12px rgba(138,43,255,0.35), inset 0 0 18px rgba(138,43,255,0.12);
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.15s, border-color 0.15s;
+}
+.mbtn:active { transform: scale(0.97); border-color: var(--magenta); box-shadow: 0 0 22px rgba(255,43,214,0.6); }
+.mbtn.back { margin-top: 20px; width: min(86vw, 420px); }
+
+/* ---------- Créditos ---------- */
+.credits { display: flex; flex-direction: column; gap: 10px; max-height: 58vh; overflow-y: auto; padding: 0 6px; }
+.credit { border-left: 2px solid var(--magenta); padding: 6px 12px; text-align: left; background: rgba(255,43,214,0.05); }
+.credit .role { color: var(--cyan); font-size: 0.78em; letter-spacing: 0.25em; }
+.credit .name { color: var(--white); font-weight: bold; font-size: 1.02em; }
+.credit .note { opacity: 0.62; font-size: 0.82em; font-style: italic; }
+
+/* ---------- Historia ---------- */
+#screen-story { background: rgba(5, 0, 12, 0.92); cursor: pointer; }
+#story-term {
+  width: min(92vw, 660px);
+  border: 1px solid var(--cyan);
+  box-shadow: 0 0 24px rgba(25,230,255,0.25), inset 0 0 40px rgba(25,230,255,0.05);
+  background: rgba(2, 8, 14, 0.92);
+  padding: 16px 18px 14px;
+  text-align: left;
+}
+#story-head {
+  font-size: clamp(9px, 2.4vw, 12px); letter-spacing: 0.3em; color: var(--cyan);
+  border-bottom: 1px dashed rgba(25,230,255,0.4); padding-bottom: 8px; margin-bottom: 12px; opacity: 0.8;
+}
+#story-speaker { font-weight: bold; letter-spacing: 0.2em; margin-bottom: 8px; font-size: clamp(13px, 3.6vw, 16px); }
+#story-text {
+  min-height: 7.5em; line-height: 1.7; font-size: clamp(13px, 3.6vw, 16px);
+  color: var(--white); white-space: pre-wrap;
+}
+#story-text::after { content: "█"; animation: blink 0.8s steps(2) infinite; color: var(--cyan); }
+#story-next { margin-top: 12px; font-size: clamp(10px, 2.6vw, 12px); letter-spacing: 0.25em; opacity: 0.55; text-align: right; animation: blink 1.4s steps(2) infinite; }
+
+/* ---------- HUD ---------- */
+#hud { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+#hud-top {
+  position: absolute; top: calc(8px + var(--sat)); left: calc(12px + var(--sal)); right: calc(12px + var(--sar));
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+#hud-score { font-size: clamp(16px, 4.6vw, 24px); color: var(--yellow); text-shadow: 0 0 10px rgba(255,211,25,0.7); letter-spacing: 0.12em; }
+#hud-combo { font-size: clamp(11px, 3vw, 14px); color: var(--magenta); text-shadow: 0 0 8px rgba(255,43,214,0.7); min-height: 1.2em; }
+#hud-center { text-align: center; }
+#hud-sector { font-size: clamp(10px, 2.7vw, 13px); letter-spacing: 0.3em; color: var(--cyan); opacity: 0.9; }
+#hud-wave { font-size: clamp(9px, 2.4vw, 12px); letter-spacing: 0.2em; opacity: 0.6; }
+#btn-pause {
+  pointer-events: auto;
+  font-family: var(--font); font-weight: bold; font-size: clamp(14px, 4vw, 18px);
+  width: 44px; height: 44px;
+  background: rgba(20, 4, 40, 0.7); color: var(--white);
+  border: 1px solid var(--violet); cursor: pointer;
+}
+#hud-bottom {
+  position: absolute; bottom: calc(10px + var(--sab)); left: calc(14px + var(--sal)); right: calc(14px + var(--sar));
+  display: flex; align-items: center; gap: 12px; justify-content: center;
+}
+#hud-hp { width: min(46vw, 260px); height: 10px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); box-shadow: 0 0 10px rgba(25,230,255,0.3); }
+#hud-hp-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--cyan), var(--green)); transition: width 0.15s; }
+#hud-power { font-size: clamp(10px, 2.8vw, 13px); color: var(--green); text-shadow: 0 0 8px rgba(43,255,136,0.6); min-width: 4em; text-align: left; }
+
+#boss-bar {
+  position: absolute; top: calc(48px + var(--sat)); left: 50%; transform: translateX(-50%);
+  width: min(82vw, 480px); text-align: center;
+}
+#boss-name { font-size: clamp(11px, 3vw, 14px); letter-spacing: 0.45em; color: var(--red); text-shadow: 0 0 12px rgba(255,59,59,0.8); }
+#boss-hp { margin-top: 4px; height: 8px; border: 1px solid var(--red); background: rgba(0,0,0,0.5); }
+#boss-hp-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--red), var(--magenta)); transition: width 0.1s; }
+
+#rotate-hint {
+  position: absolute; bottom: calc(64px + var(--sab)); left: 50%; transform: translateX(-50%);
+  z-index: 35; font-size: 11px; letter-spacing: 0.2em; opacity: 0.5; pointer-events: none;
+}
+
+/* Botones de opciones */
+.mbtn.opt { width: 100%; }
+
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="game"></canvas>
+
+  <!-- Capa CRT (dirección de arte: scanlines + viñeta + parpadeo) -->
+  <div id="crt" aria-hidden="true">
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="flicker"></div>
+  </div>
+
+  <!-- HUD durante partida -->
+  <div id="hud" class="hidden" aria-hidden="true">
+    <div id="hud-top">
+      <div id="hud-left">
+        <div id="hud-score">000000</div>
+        <div id="hud-combo"></div>
+      </div>
+      <div id="hud-center">
+        <div id="hud-sector"></div>
+        <div id="hud-wave"></div>
+      </div>
+      <div id="hud-right">
+        <button id="btn-pause" type="button">II</button>
+      </div>
+    </div>
+    <div id="hud-bottom">
+      <div id="hud-hp"><div id="hud-hp-fill"></div></div>
+      <div id="hud-power"></div>
+    </div>
+    <div id="boss-bar" class="hidden"><span id="boss-name">M.A.D.R.E.</span><div id="boss-hp"><div id="boss-hp-fill"></div></div></div>
+  </div>
+
+  <!-- Pantallas DOM (UX: texto nítido fuera del canvas) -->
+  <div id="screen-boot" class="screen">
+    <pre id="boot-text"></pre>
+  </div>
+
+  <div id="screen-title" class="screen hidden">
+    <div class="title-wrap">
+      <div id="title-logo">
+        <span class="t-neon">NEON</span>
+        <span class="t-exodus">EXODUS</span>
+        <span class="t-year">2 0 8 7</span>
+      </div>
+      <div id="title-sub">UN ARCADE DE ESTUDIO SIETE//SIETE</div>
+      <div class="menu" id="title-menu">
+        <button class="mbtn" id="m-start" type="button">▶ INICIAR CONEXIÓN</button>
+        <button class="mbtn" id="m-howto" type="button">CÓMO JUGAR</button>
+        <button class="mbtn" id="m-options" type="button">OPCIONES</button>
+        <button class="mbtn" id="m-credits" type="button">CRÉDITOS</button>
+      </div>
+      <div id="title-hiscore"></div>
+      <div id="title-hint">INSERT COIN · 1987 → 2087</div>
+    </div>
+  </div>
+
+  <div id="screen-howto" class="screen hidden">
+    <h2 class="sc-h">CÓMO JUGAR</h2>
+    <div class="sc-body">
+      <p><b class="c-cyan">MOVER</b> — pulgar izquierdo (joystick virtual) o WASD.</p>
+      <p><b class="c-magenta">APUNTAR / DISPARAR</b> — pulgar derecho (joystick) o ratón. Si no apuntas, VEGA dispara sola al enemigo más cercano.</p>
+      <p><b class="c-yellow">DASH</b> — toca dos veces el lado izquierdo o pulsa ESPACIO. Eres invulnerable durante el impulso.</p>
+      <p><b class="c-green">MEJORAS</b> — recoge los hexágonos: <span class="c-cyan">T</span> triple, <span class="c-yellow">R</span> rápido, <span class="c-green">E</span> escudo, <span class="c-red">B</span> bomba, <span class="c-magenta">L</span> tiempo-bala, <span class="c-white">+</span> vida.</p>
+      <p><b class="c-white">COMBO</b> — encadena bajas sin recibir daño para multiplicar puntos.</p>
+      <p class="dim">Consejo de QA: juega con sonido y, en móvil, gira a horizontal si quieres más campo de visión. Añádelo a tu pantalla de inicio para jugar a pantalla completa.</p>
+    </div>
+    <button class="mbtn back" data-back type="button">◀ VOLVER</button>
+  </div>
+
+  <div id="screen-options" class="screen hidden">
+    <h2 class="sc-h">OPCIONES</h2>
+    <div class="sc-body">
+      <button class="mbtn opt" id="o-music" type="button">MÚSICA: SÍ</button>
+      <button class="mbtn opt" id="o-sfx" type="button">EFECTOS: SÍ</button>
+      <button class="mbtn opt" id="o-crt" type="button">FILTRO CRT: SÍ</button>
+      <button class="mbtn opt" id="o-shake" type="button">VIBRACIÓN PANTALLA: SÍ</button>
+      <button class="mbtn opt" id="o-wipe" type="button">BORRAR RÉCORDS</button>
+    </div>
+    <button class="mbtn back" data-back type="button">◀ VOLVER</button>
+  </div>
+
+  <div id="screen-credits" class="screen hidden">
+    <h2 class="sc-h">ESTUDIO SIETE//SIETE</h2>
+    <div class="sc-body credits" id="credits-body"></div>
+    <button class="mbtn back" data-back type="button">◀ VOLVER</button>
+  </div>
+
+  <!-- Terminal narrativo -->
+  <div id="screen-story" class="screen hidden">
+    <div id="story-term">
+      <div id="story-head">RED NEURAL HELIOS — CANAL PIRATA 7.7</div>
+      <div id="story-speaker"></div>
+      <div id="story-text"></div>
+      <div id="story-next">▼ TOCA PARA CONTINUAR</div>
+    </div>
+  </div>
+
+  <div id="screen-pause" class="screen hidden">
+    <h2 class="sc-h">PAUSA</h2>
+    <div class="menu">
+      <button class="mbtn" id="p-resume" type="button">REANUDAR</button>
+      <button class="mbtn" id="p-restart" type="button">REINICIAR SECTOR</button>
+      <button class="mbtn" id="p-quit" type="button">ABANDONAR MISIÓN</button>
+    </div>
+  </div>
+
+  <div id="screen-gameover" class="screen hidden">
+    <h2 class="sc-h c-red">SEÑAL PERDIDA</h2>
+    <div class="sc-body center">
+      <p id="go-flavor" class="dim"></p>
+      <p>PUNTUACIÓN <b id="go-score" class="c-yellow">0</b></p>
+      <p id="go-record" class="c-magenta hidden">★ NUEVO RÉCORD ★</p>
+    </div>
+    <div class="menu">
+      <button class="mbtn" id="go-retry" type="button">RECONECTAR (REINTENTAR SECTOR)</button>
+      <button class="mbtn" id="go-title" type="button">VOLVER AL TÍTULO</button>
+    </div>
+  </div>
+
+  <div id="screen-victory" class="screen hidden">
+    <h2 class="sc-h c-cyan">AMANECER ANALÓGICO</h2>
+    <div class="sc-body center">
+      <p>PUNTUACIÓN FINAL <b id="v-score" class="c-yellow">0</b></p>
+      <p id="v-record" class="c-magenta hidden">★ NUEVO RÉCORD ★</p>
+      <p class="dim">Gracias por jugar. — Estudio Siete//Siete</p>
+    </div>
+    <div class="menu">
+      <button class="mbtn" id="v-credits" type="button">VER CRÉDITOS</button>
+      <button class="mbtn" id="v-title" type="button">VOLVER AL TÍTULO</button>
+    </div>
+  </div>
+
+  <div id="rotate-hint" class="hidden">▶ También puedes girar el móvil ◀</div>
+</div>
+
+<script>
+
+/* ===== js/config.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — config.js
+   Diseño de juego: constantes, balance y utilidades comunes.
+   Todo el juego vive en el espacio de nombres NX.
+   ============================================================ */
+"use strict";
+
+window.NX = {};
+
+NX.VERSION = "1.0.0";
+NX.SAVE_KEY = "nx2087_save_v1";
+
+/* Utilidades --------------------------------------------------- */
+NX.rand = function (a, b) { return a + Math.random() * (b - a); };
+NX.randInt = function (a, b) { return Math.floor(NX.rand(a, b + 1)); };
+NX.pick = function (arr) { return arr[(Math.random() * arr.length) | 0]; };
+NX.clamp = function (v, a, b) { return v < a ? a : (v > b ? b : v); };
+NX.lerp = function (a, b, t) { return a + (b - a) * t; };
+NX.dist2 = function (ax, ay, bx, by) { var dx = ax - bx, dy = ay - by; return dx * dx + dy * dy; };
+NX.angleTo = function (ax, ay, bx, by) { return Math.atan2(by - ay, bx - ax); };
+NX.TAU = Math.PI * 2;
+
+/* Paletas por sector (dirección de arte) ----------------------- */
+/* [fondo, horizonte/sol, rejilla, acento1, acento2] */
+NX.PALETTES = [
+  { bg: "#0a0014", sun: "#ff2bd6", grid: "#19e6ff", a1: "#ff2bd6", a2: "#19e6ff", sky: "#1b0533" }, // Arrabal Neón
+  { bg: "#120800", sun: "#ffd319", grid: "#ff7a18", a1: "#ffd319", a2: "#19e6ff", sky: "#2b1003" }, // Mercado de Datos
+  { bg: "#001408", sun: "#2bff88", grid: "#19ffe0", a1: "#2bff88", a2: "#ccff2b", sky: "#03260f" }, // Cloacas Cromadas
+  { bg: "#14000a", sun: "#ff3b3b", grid: "#8a2bff", a1: "#ff3b3b", a2: "#ff2bd6", sky: "#2b0314" }, // Torre Helios
+  { bg: "#08001c", sun: "#f4f0ff", grid: "#8a2bff", a1: "#b388ff", a2: "#19e6ff", sky: "#160338" }  // Núcleo MADRE
+];
+
+/* Jugador ------------------------------------------------------ */
+NX.PLAYER = {
+  radius: 11,
+  speed: 215,          // px/s a escala 1
+  hpMax: 100,
+  fireRate: 0.15,      // s entre disparos
+  bulletSpeed: 560,
+  bulletDmg: 1,
+  dashSpeed: 640,
+  dashTime: 0.22,
+  dashCooldown: 1.1,
+  hurtInvuln: 0.9,
+  contactDamage: 18    // daño que recibe por contacto con enemigo
+};
+
+/* Mejoras (UX: iconos hexagonales con letra) ------------------- */
+NX.POWERUPS = {
+  TRIPLE: { letter: "T", color: "#19e6ff", dur: 9, label: "TRIPLE" },
+  RAPID:  { letter: "R", color: "#ffd319", dur: 9, label: "RÁPIDO" },
+  SHIELD: { letter: "E", color: "#2bff88", dur: 8, label: "ESCUDO" },
+  BOMB:   { letter: "B", color: "#ff3b3b", dur: 0, label: "BOMBA" },
+  SLOWMO: { letter: "L", color: "#ff2bd6", dur: 5, label: "T-BALA" },
+  MED:    { letter: "+", color: "#f4f0ff", dur: 0, label: "VIDA" }
+};
+NX.POWERUP_DROP = 0.13;
+NX.POWERUP_LIFE = 9;     // s en el suelo
+
+/* Enemigos ----------------------------------------------------- */
+NX.ENEMIES = {
+  drone:    { hp: 2,  speed: 95,  radius: 12, score: 100, color: "#ff2bd6" },
+  spinner:  { hp: 3,  speed: 120, radius: 11, score: 150, color: "#19e6ff", fireRate: 1.7, bulletSpeed: 165 },
+  tank:     { hp: 11, speed: 38,  radius: 21, score: 350, color: "#ffd319", fireRate: 2.4, bulletSpeed: 140 },
+  wraith:   { hp: 4,  speed: 150, radius: 12, score: 250, color: "#8a2bff", teleportEvery: 2.6 },
+  splitter: { hp: 5,  speed: 70,  radius: 16, score: 200, color: "#2bff88" },
+  mini:     { hp: 1,  speed: 150, radius: 7,  score: 50,  color: "#2bff88" },
+  turret:   { hp: 8,  speed: 0,   radius: 15, score: 300, color: "#ff7a18", fireRate: 2.1, bulletSpeed: 175 },
+  boss:     { hp: 300, speed: 42, radius: 52, score: 10000, color: "#f4f0ff" }
+};
+NX.ENEMY_BULLET_R = 5;
+NX.SPAWN_TELEGRAPH = 0.8;  // s de aviso antes de materializarse
+
+/* Combo -------------------------------------------------------- */
+NX.COMBO_WINDOW = 3.2;     // s sin matar para perder combo
+NX.COMBO_STEP = 5;         // bajas por nivel de multiplicador
+NX.COMBO_MAX = 8;
+
+/* Render ------------------------------------------------------- */
+NX.MAX_DPR = 2;
+NX.STAR_COUNT = 70;
+NX.GRID_SPEED = 42;
+
+/* ===== js/audio.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — audio.js
+   Audio: sintetizador synthwave 100% procedural (Web Audio).
+   Sin samples: bombo, caja, charles, bajo, arpegio, pad y lead
+   se generan con osciladores y ruido. Un tema por sector.
+   ============================================================ */
+"use strict";
+
+NX.audio = (function () {
+  var ctx = null;
+  var master, musicBus, sfxBus, noiseBuf;
+  var musicOn = true, sfxOn = true;
+
+  /* --- Canciones (compositor) ---------------------------------
+     prog: progresión de 4 acordes (semitonos sobre la raíz, modo menor).
+     Cada acorde dura un compás de 16 semicorcheas.                 */
+  var SONGS = {
+    title:  { bpm: 96,  root: 45, prog: [0, -4, -7, -2], mood: 0.55, lead: false },
+    sector0:{ bpm: 118, root: 45, prog: [0, 8, 3, 10],   mood: 0.7,  lead: true  },
+    sector1:{ bpm: 124, root: 43, prog: [0, 5, 8, 7],    mood: 0.75, lead: true  },
+    sector2:{ bpm: 112, root: 41, prog: [0, 3, -2, 5],   mood: 0.6,  lead: true  },
+    sector3:{ bpm: 132, root: 47, prog: [0, 8, 5, 7],    mood: 0.85, lead: true  },
+    sector4:{ bpm: 138, root: 44, prog: [0, 1, 0, -2],   mood: 0.95, lead: true  },
+    boss:   { bpm: 148, root: 42, prog: [0, 6, 1, 7],    mood: 1.0,  lead: true  },
+    ending: { bpm: 84,  root: 48, prog: [0, -4, -7, -5], mood: 0.4,  lead: false }
+  };
+
+  var song = null;
+  var step = 0, nextStepTime = 0, timerId = null;
+  var LOOKAHEAD = 0.12, INTERVAL = 30;
+
+  function midiToFreq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+
+  function ensureCtx() {
+    if (ctx) return true;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = 0.85; master.connect(ctx.destination);
+    musicBus = ctx.createGain(); musicBus.gain.value = musicOn ? 0.6 : 0; musicBus.connect(master);
+    sfxBus = ctx.createGain(); sfxBus.gain.value = sfxOn ? 0.8 : 0; sfxBus.connect(master);
+    // Búfer de ruido blanco compartido (caja, charles, explosiones)
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 1.2, ctx.sampleRate);
+    var d = noiseBuf.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return true;
+  }
+
+  function unlock() {
+    if (!ensureCtx()) return;
+    if (ctx.state === "suspended") ctx.resume();
+  }
+
+  /* --- Voces de batería --------------------------------------- */
+  function kick(t) {
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(150, t);
+    o.frequency.exponentialRampToValueAtTime(38, t + 0.13);
+    g.gain.setValueAtTime(0.95, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    o.connect(g); g.connect(musicBus);
+    o.start(t); o.stop(t + 0.25);
+  }
+
+  function snare(t) {
+    var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf;
+    f.type = "bandpass"; f.frequency.value = 1900; f.Q.value = 0.8;
+    g.gain.setValueAtTime(0.5, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+    s.connect(f); f.connect(g); g.connect(musicBus);
+    s.start(t); s.stop(t + 0.2);
+    // cuerpo tonal ochentero (caja con reverb de compuerta simulada)
+    var o = ctx.createOscillator(), g2 = ctx.createGain();
+    o.type = "triangle"; o.frequency.value = 190;
+    g2.gain.setValueAtTime(0.25, t);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    o.connect(g2); g2.connect(musicBus);
+    o.start(t); o.stop(t + 0.14);
+  }
+
+  function hat(t, open) {
+    var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf;
+    f.type = "highpass"; f.frequency.value = 7500;
+    var dur = open ? 0.18 : 0.05;
+    g.gain.setValueAtTime(open ? 0.22 : 0.16, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    s.connect(f); f.connect(g); g.connect(musicBus);
+    s.start(t); s.stop(t + dur + 0.02);
+  }
+
+  /* --- Voces melódicas ----------------------------------------- */
+  function bass(midi, t, dur) {
+    var o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    o.type = "sawtooth"; o.frequency.value = midiToFreq(midi);
+    f.type = "lowpass";
+    f.frequency.setValueAtTime(900, t);
+    f.frequency.exponentialRampToValueAtTime(220, t + dur);
+    g.gain.setValueAtTime(0.34, t);
+    g.gain.setValueAtTime(0.3, t + dur * 0.7);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(f); f.connect(g); g.connect(musicBus);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+
+  function arp(midi, t, dur) {
+    var o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    o.type = "square"; o.frequency.value = midiToFreq(midi);
+    f.type = "lowpass"; f.frequency.value = 3400;
+    g.gain.setValueAtTime(0.085, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(f); f.connect(g); g.connect(musicBus);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+
+  function pad(rootMidi, t, dur) {
+    var freqs = [rootMidi, rootMidi + 3, rootMidi + 7, rootMidi + 12];
+    for (var i = 0; i < freqs.length; i++) {
+      for (var dt = -1; dt <= 1; dt += 2) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = "sawtooth";
+        o.frequency.value = midiToFreq(freqs[i]) * (1 + dt * 0.0035);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(0.028, t + dur * 0.25);
+        g.gain.linearRampToValueAtTime(0.0001, t + dur);
+        var f = ctx.createBiquadFilter();
+        f.type = "lowpass"; f.frequency.value = 1300;
+        o.connect(f); f.connect(g); g.connect(musicBus);
+        o.start(t); o.stop(t + dur + 0.05);
+      }
+    }
+  }
+
+  function lead(midi, t, dur) {
+    var o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    o.type = "sawtooth"; o.frequency.value = midiToFreq(midi);
+    // vibrato analógico
+    var v = ctx.createOscillator(), vg = ctx.createGain();
+    v.frequency.value = 5.6; vg.gain.value = 5;
+    v.connect(vg); vg.connect(o.frequency);
+    f.type = "lowpass"; f.frequency.value = 2600;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.085, t + 0.03);
+    g.gain.setValueAtTime(0.085, t + dur * 0.7);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(f); f.connect(g); g.connect(musicBus);
+    o.start(t); o.stop(t + dur + 0.05);
+    v.start(t); v.stop(t + dur + 0.05);
+  }
+
+  /* --- Secuenciador --------------------------------------------
+     64 pasos = 4 compases. Cada compás usa un acorde de la
+     progresión. Patrones fijos con variación pseudo-aleatoria
+     estable (basada en el paso) para que el tema respire.        */
+  var ARP_SHAPE = [0, 7, 12, 7, 3, 7, 12, 15, 0, 7, 12, 7, 3, 10, 7, 15];
+  var LEAD_RIFF = [12, -1, 15, -1, 12, 10, -1, 7, -1, -1, 8, 10, -1, 7, -1, -1];
+
+  function scheduleStep(s, t) {
+    var bar = (s >> 4) & 3;            // 0..3
+    var i = s & 15;                    // semicorchea dentro del compás
+    var chord = song.prog[bar];
+    var root = song.root + chord;
+    var spb = 60 / song.bpm;           // segundos por negra
+    var s16 = spb / 4;
+
+    // Batería
+    if (i % 4 === 0) kick(t);
+    if (song.mood > 0.8 && i === 14) kick(t);          // empuje extra en temas intensos
+    if (i === 4 || i === 12) snare(t);
+    if (i % 2 === 0) hat(t, false);
+    if (i === 10) hat(t, true);
+
+    // Bajo: corcheas con octava
+    if (i % 2 === 0) {
+      var b = (i % 8 === 6) ? root + 12 : root;
+      bass(b - 12, t, s16 * 1.8);
+    }
+
+    // Arpegio: semicorcheas continuas
+    arp(root + ARP_SHAPE[i], t, s16 * 0.9);
+
+    // Pad al cambio de acorde
+    if (i === 0) pad(root + 12, t, spb * 4);
+
+    // Lead: riff en compases 3 y 4
+    if (song.lead && bar >= 2) {
+      var n = LEAD_RIFF[i];
+      if (n >= 0) lead(root + 12 + n, t, s16 * 1.6);
+    }
+  }
+
+  function scheduler() {
+    if (!ctx || !song) return;
+    var s16 = (60 / song.bpm) / 4;
+    while (nextStepTime < ctx.currentTime + LOOKAHEAD) {
+      scheduleStep(step, Math.max(nextStepTime, ctx.currentTime + 0.005));
+      nextStepTime += s16;
+      step = (step + 1) % 64;
+    }
+  }
+
+  function playSong(name) {
+    if (!ensureCtx()) return;
+    var s = SONGS[name];
+    if (!s) return;
+    if (song === s && timerId) return;  // ya suena
+    song = s;
+    step = 0;
+    nextStepTime = ctx.currentTime + 0.06;
+    if (!timerId) timerId = setInterval(scheduler, INTERVAL);
+  }
+
+  function stopMusic() {
+    song = null;
+    if (timerId) { clearInterval(timerId); timerId = null; }
+  }
+
+  /* --- Efectos de sonido --------------------------------------- */
+  function blip(fa, fb, dur, type, vol) {
+    if (!ctx || !sfxOn) return;
+    var t = ctx.currentTime;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || "square";
+    o.frequency.setValueAtTime(fa, t);
+    o.frequency.exponentialRampToValueAtTime(Math.max(1, fb), t + dur);
+    g.gain.setValueAtTime(vol || 0.18, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(sfxBus);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+
+  function boom(dur, vol, freq) {
+    if (!ctx || !sfxOn) return;
+    var t = ctx.currentTime;
+    var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf;
+    f.type = "lowpass";
+    f.frequency.setValueAtTime(freq || 2200, t);
+    f.frequency.exponentialRampToValueAtTime(120, t + dur);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    s.connect(f); f.connect(g); g.connect(sfxBus);
+    s.start(t); s.stop(t + dur + 0.05);
+  }
+
+  var lastShot = 0;
+  var sfx = {
+    shoot: function () {
+      if (!ctx) return;
+      if (ctx.currentTime - lastShot < 0.045) return; // antispam de QA
+      lastShot = ctx.currentTime;
+      blip(880, 220, 0.08, "square", 0.07);
+    },
+    enemyShoot: function () { blip(330, 110, 0.12, "sawtooth", 0.05); },
+    hit: function () { blip(520, 160, 0.06, "triangle", 0.1); },
+    explode: function () { boom(0.3, 0.3); blip(240, 40, 0.25, "sawtooth", 0.12); },
+    bigExplode: function () { boom(0.8, 0.5, 1400); blip(160, 28, 0.7, "sawtooth", 0.2); },
+    hurt: function () { boom(0.25, 0.35, 900); blip(200, 60, 0.3, "square", 0.18); },
+    dash: function () { blip(180, 720, 0.16, "sawtooth", 0.1); },
+    pickup: function () { blip(523, 1046, 0.09, "square", 0.14); setTimeout(function(){ blip(784, 1568, 0.12, "square", 0.12); }, 70); },
+    bomb: function () { boom(1.1, 0.55, 3000); },
+    spawn: function () { blip(60, 300, 0.25, "sine", 0.07); },
+    ui: function () { blip(660, 880, 0.05, "square", 0.1); },
+    typeTick: function () { blip(990, 880, 0.018, "square", 0.025); },
+    bossRoar: function () { blip(110, 35, 0.9, "sawtooth", 0.3); boom(0.9, 0.4, 700); },
+    gameover: function () {
+      var notes = [392, 330, 262, 196];
+      notes.forEach(function (f, k) { setTimeout(function(){ blip(f, f * 0.5, 0.5, "triangle", 0.2); }, k * 260); });
+    },
+    fanfare: function () {
+      var notes = [523, 659, 784, 1046, 784, 1046];
+      notes.forEach(function (f, k) { setTimeout(function(){ blip(f, f, 0.22, "square", 0.16); }, k * 130); });
+    }
+  };
+
+  /* --- API ------------------------------------------------------ */
+  return {
+    unlock: unlock,
+    playSong: playSong,
+    stopMusic: stopMusic,
+    sfx: sfx,
+    setMusic: function (on) {
+      musicOn = on;
+      if (ctx) musicBus.gain.value = on ? 0.6 : 0;
+    },
+    setSfx: function (on) {
+      sfxOn = on;
+      if (ctx) sfxBus.gain.value = on ? 0.8 : 0;
+    },
+    duck: function () { // baja el volumen un instante (pausa, golpe gordo)
+      if (!ctx) return;
+      musicBus.gain.cancelScheduledValues(ctx.currentTime);
+      musicBus.gain.setValueAtTime(musicOn ? 0.18 : 0, ctx.currentTime);
+      musicBus.gain.linearRampToValueAtTime(musicOn ? 0.6 : 0, ctx.currentTime + 1.2);
+    }
+  };
+})();
+
+/* ===== js/input.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — input.js
+   UX/Controles: dos joysticks virtuales flotantes (móvil),
+   doble toque a la izquierda = dash. WASD + ratón en escritorio.
+   Los sticks "nacen" donde apoyas el pulgar: nada de zonas fijas
+   incómodas (decisión de UX tras pruebas en iPhone).
+   ============================================================ */
+"use strict";
+
+NX.input = (function () {
+  var canvas = null;
+
+  var state = {
+    move: { x: 0, y: 0 },            // vector normalizado [-1..1]
+    aim: { x: 0, y: 0, active: false },
+    dash: false,                     // petición de dash (se consume)
+    touchMode: false,
+    // datos para dibujar los sticks
+    lStick: null,                    // {ax, ay, x, y}
+    rStick: null
+  };
+
+  var keys = {};
+  var mouse = { x: 0, y: 0, seen: false };
+  var lPointer = -1, rPointer = -1;
+  var lastLeftTap = 0;
+  var STICK_RADIUS = 56;
+  var DEAD = 8;
+
+  function isLeft(x) { return x < window.innerWidth * 0.5; }
+
+  function onTouchStart(e) {
+    e.preventDefault();
+    state.touchMode = true;
+    for (var i = 0; i < e.changedTouches.length; i++) {
+      var t = e.changedTouches[i];
+      if (isLeft(t.clientX) && lPointer === -1) {
+        lPointer = t.identifier;
+        state.lStick = { ax: t.clientX, ay: t.clientY, x: t.clientX, y: t.clientY };
+        var now = performance.now();
+        if (now - lastLeftTap < 280) state.dash = true;
+        lastLeftTap = now;
+      } else if (!isLeft(t.clientX) && rPointer === -1) {
+        rPointer = t.identifier;
+        state.rStick = { ax: t.clientX, ay: t.clientY, x: t.clientX, y: t.clientY };
+      }
+    }
+  }
+
+  function onTouchMove(e) {
+    e.preventDefault();
+    for (var i = 0; i < e.changedTouches.length; i++) {
+      var t = e.changedTouches[i];
+      if (t.identifier === lPointer && state.lStick) {
+        state.lStick.x = t.clientX; state.lStick.y = t.clientY;
+      } else if (t.identifier === rPointer && state.rStick) {
+        state.rStick.x = t.clientX; state.rStick.y = t.clientY;
+      }
+    }
+  }
+
+  function onTouchEnd(e) {
+    e.preventDefault();
+    for (var i = 0; i < e.changedTouches.length; i++) {
+      var t = e.changedTouches[i];
+      if (t.identifier === lPointer) { lPointer = -1; state.lStick = null; }
+      if (t.identifier === rPointer) { rPointer = -1; state.rStick = null; }
+    }
+  }
+
+  function stickVector(st) {
+    var dx = st.x - st.ax, dy = st.y - st.ay;
+    var len = Math.hypot(dx, dy);
+    if (len < DEAD) return { x: 0, y: 0 };
+    var m = Math.min(1, len / STICK_RADIUS);
+    return { x: (dx / len) * m, y: (dy / len) * m };
+  }
+
+  function onKey(e, down) {
+    if (e.repeat) return;
+    keys[e.code] = down;
+    if (down && (e.code === "Space")) { state.dash = true; e.preventDefault(); }
+    if (down && (e.code === "Escape" || e.code === "KeyP")) {
+      if (NX.game) NX.game.togglePause();
+    }
+  }
+
+  /* Recalcula move/aim cada frame (lo llama el bucle principal) */
+  function poll(playerX, playerY) {
+    // MOVER
+    if (state.lStick) {
+      var v = stickVector(state.lStick);
+      state.move.x = v.x; state.move.y = v.y;
+    } else {
+      var mx = 0, my = 0;
+      if (keys.KeyA || keys.ArrowLeft) mx -= 1;
+      if (keys.KeyD || keys.ArrowRight) mx += 1;
+      if (keys.KeyW || keys.ArrowUp) my -= 1;
+      if (keys.KeyS || keys.ArrowDown) my += 1;
+      var l = Math.hypot(mx, my) || 1;
+      state.move.x = mx / l; state.move.y = my / l;
+      if (mx === 0 && my === 0) { state.move.x = 0; state.move.y = 0; }
+    }
+    // APUNTAR
+    if (state.rStick) {
+      var a = stickVector(state.rStick);
+      if (a.x || a.y) {
+        var al = Math.hypot(a.x, a.y);
+        state.aim.x = a.x / al; state.aim.y = a.y / al; state.aim.active = true;
+      } else {
+        state.aim.active = false;
+      }
+    } else if (!state.touchMode && mouse.seen) {
+      var dx = mouse.x - playerX, dy = mouse.y - playerY;
+      var dl = Math.hypot(dx, dy);
+      if (dl > 4) { state.aim.x = dx / dl; state.aim.y = dy / dl; state.aim.active = true; }
+      else state.aim.active = false;
+    } else {
+      state.aim.active = false;
+    }
+  }
+
+  function consumeDash() {
+    var d = state.dash;
+    state.dash = false;
+    return d;
+  }
+
+  function init(cv) {
+    canvas = cv;
+    canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+    canvas.addEventListener("touchend", onTouchEnd, { passive: false });
+    canvas.addEventListener("touchcancel", onTouchEnd, { passive: false });
+    window.addEventListener("keydown", function (e) { onKey(e, true); });
+    window.addEventListener("keyup", function (e) { onKey(e, false); });
+    window.addEventListener("mousemove", function (e) {
+      mouse.x = e.clientX; mouse.y = e.clientY; mouse.seen = true;
+    });
+    // doble clic = dash en escritorio
+    canvas.addEventListener("dblclick", function (e) { e.preventDefault(); state.dash = true; });
+    // que iOS no haga zoom con doble toque sobre el canvas
+    document.addEventListener("gesturestart", function (e) { e.preventDefault(); });
+  }
+
+  return { init: init, poll: poll, consumeDash: consumeDash, state: state, STICK_RADIUS: STICK_RADIUS };
+})();
+
+/* ===== js/fx.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — fx.js
+   Arte técnico: partículas, sacudidas, destellos y el fondo
+   synthwave (estrellas, sol de franjas, skyline procedural y
+   rejilla en perspectiva que avanza hacia el horizonte).
+   ============================================================ */
+"use strict";
+
+NX.fx = (function () {
+
+  /* --- Partículas (pool fijo, cero basura por frame) ----------- */
+  var MAXP = 420;
+  var parts = [];
+  for (var i = 0; i < MAXP; i++) {
+    parts.push({ on: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 0, size: 2, color: "#fff", drag: 1 });
+  }
+  var pIdx = 0;
+
+  function spawn(x, y, vx, vy, life, size, color, drag) {
+    var p = parts[pIdx];
+    pIdx = (pIdx + 1) % MAXP;
+    p.on = true; p.x = x; p.y = y; p.vx = vx; p.vy = vy;
+    p.life = life; p.maxLife = life; p.size = size; p.color = color;
+    p.drag = drag || 0.98;
+  }
+
+  function burst(x, y, color, n, speed, size) {
+    n = n || 14; speed = speed || 180; size = size || 3;
+    for (var i = 0; i < n; i++) {
+      var a = Math.random() * NX.TAU;
+      var s = speed * (0.3 + Math.random() * 0.9);
+      spawn(x, y, Math.cos(a) * s, Math.sin(a) * s,
+        0.35 + Math.random() * 0.45, size * (0.6 + Math.random() * 0.8), color, 0.94);
+    }
+  }
+
+  function sparks(x, y, color, n) {
+    for (var i = 0; i < (n || 5); i++) {
+      var a = Math.random() * NX.TAU;
+      var s = 60 + Math.random() * 120;
+      spawn(x, y, Math.cos(a) * s, Math.sin(a) * s, 0.2 + Math.random() * 0.2, 2, color, 0.92);
+    }
+  }
+
+  /* --- Textos flotantes (puntuaciones, avisos) ----------------- */
+  var texts = [];
+  function textPop(x, y, str, color, big) {
+    texts.push({ x: x, y: y, str: str, color: color, life: 0.9, big: !!big });
+    if (texts.length > 24) texts.shift();
+  }
+
+  /* --- Ondas expansivas ---------------------------------------- */
+  var rings = [];
+  function ring(x, y, color, maxR) {
+    rings.push({ x: x, y: y, r: 6, maxR: maxR || 90, color: color, life: 1 });
+    if (rings.length > 16) rings.shift();
+  }
+
+  /* --- Sacudida y destello ------------------------------------- */
+  var shakeT = 0, shakeMag = 0, shakeOn = true;
+  function shake(mag, dur) {
+    if (!shakeOn) return;
+    shakeMag = Math.max(shakeMag, mag);
+    shakeT = Math.max(shakeT, dur);
+  }
+  var flashA = 0, flashColor = "#fff";
+  function flash(color, a) { flashColor = color; flashA = Math.max(flashA, a); }
+
+  /* --- Fondo ----------------------------------------------------
+     Skyline determinista por sector (semilla LCG) para que cada
+     fase tenga su silueta propia y reconocible.                   */
+  var stars = [];
+  function makeStars(w, h) {
+    stars.length = 0;
+    for (var i = 0; i < NX.STAR_COUNT; i++) {
+      stars.push({ x: Math.random() * w, y: Math.random() * h * 0.55, s: Math.random() * 1.6 + 0.4, tw: Math.random() * NX.TAU });
+    }
+  }
+
+  var skyline = [], skylineSeed = -1;
+  function lcg(seed) {
+    var s = seed >>> 0;
+    return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+  }
+  function makeSkyline(seed, w, h) {
+    skylineSeed = seed;
+    skyline.length = 0;
+    var rnd = lcg(seed * 7919 + 13);
+    var x = -20;
+    while (x < w + 40) {
+      var bw = 24 + rnd() * 60;
+      var bh = 24 + rnd() * (h * 0.11);
+      var win = rnd() > 0.35;
+      skyline.push({ x: x, w: bw, h: bh, win: win, antenna: rnd() > 0.7 });
+      x += bw + 4 + rnd() * 14;
+    }
+  }
+
+  var gridScroll = 0;
+
+  function drawBackground(ctx, w, h, dt, t, pal, intensity, sectorIdx) {
+    if (stars.length === 0) makeStars(w, h);
+    if (skylineSeed !== sectorIdx) makeSkyline(sectorIdx + 1, w, h);
+
+    var horizon = h * 0.42;
+
+    // Cielo degradado
+    var sky = ctx.createLinearGradient(0, 0, 0, horizon);
+    sky.addColorStop(0, "#020008");
+    sky.addColorStop(1, pal.sky);
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, horizon);
+
+    // Estrellas que parpadean
+    ctx.fillStyle = "#cfd8ff";
+    for (var i = 0; i < stars.length; i++) {
+      var st = stars[i];
+      var a = 0.35 + 0.65 * Math.abs(Math.sin(t * 1.3 + st.tw));
+      ctx.globalAlpha = a * 0.8;
+      ctx.fillRect(st.x, st.y, st.s, st.s);
+    }
+    ctx.globalAlpha = 1;
+
+    // Sol synthwave con franjas
+    var sunR = Math.min(w, h) * 0.23;
+    var sunX = w * 0.5, sunY = horizon - sunR * 0.55;
+    var sg = ctx.createLinearGradient(0, sunY - sunR, 0, sunY + sunR);
+    sg.addColorStop(0, pal.sun);
+    sg.addColorStop(1, pal.a1);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR, 0, NX.TAU);
+    ctx.clip();
+    ctx.fillStyle = sg;
+    ctx.fillRect(sunX - sunR, sunY - sunR, sunR * 2, sunR * 2);
+    // franjas horizontales que suben
+    ctx.fillStyle = "#020008";
+    var stripeShift = (t * 14) % 18;
+    for (var sY = sunY - sunR + stripeShift; sY < sunY + sunR; sY += 18) {
+      var frac = (sY - (sunY - sunR)) / (sunR * 2);
+      var sh = 1 + frac * 7;
+      if (frac > 0.45) ctx.fillRect(sunX - sunR, sY, sunR * 2, sh);
+    }
+    ctx.restore();
+    // halo del sol
+    ctx.globalAlpha = 0.22 + 0.05 * Math.sin(t * 2);
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR * 1.35, 0, NX.TAU);
+    ctx.fillStyle = pal.sun;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Skyline (dos capas de parallax)
+    ctx.fillStyle = "#06001a";
+    for (var k = 0; k < skyline.length; k++) {
+      var b = skyline[k];
+      ctx.fillRect(b.x, horizon - b.h, b.w, b.h);
+      if (b.antenna) ctx.fillRect(b.x + b.w * 0.5 - 1, horizon - b.h - 14, 2, 14);
+    }
+    // ventanas encendidas
+    for (var k2 = 0; k2 < skyline.length; k2++) {
+      var b2 = skyline[k2];
+      if (!b2.win) continue;
+      ctx.fillStyle = (k2 % 2 === 0) ? pal.a1 : pal.a2;
+      ctx.globalAlpha = 0.5;
+      for (var wy = horizon - b2.h + 6; wy < horizon - 8; wy += 11) {
+        for (var wx = b2.x + 4; wx < b2.x + b2.w - 4; wx += 10) {
+          if (((wx * 13 + wy * 7 + k2 * 31) % 17) < 5) ctx.fillRect(wx, wy, 3, 4);
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Suelo
+    var gnd = ctx.createLinearGradient(0, horizon, 0, h);
+    gnd.addColorStop(0, pal.sky);
+    gnd.addColorStop(0.25, pal.bg);
+    gnd.addColorStop(1, "#01000a");
+    ctx.fillStyle = gnd;
+    ctx.fillRect(0, horizon, w, h - horizon);
+
+    // Rejilla en perspectiva
+    gridScroll += dt * NX.GRID_SPEED * (0.7 + intensity * 0.6);
+    ctx.strokeStyle = pal.grid;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.4;
+    // verticales que convergen en el punto de fuga
+    var vp = sunX;
+    for (var gx = -10; gx <= 10; gx++) {
+      ctx.beginPath();
+      ctx.moveTo(vp + gx * 26, horizon);
+      ctx.lineTo(vp + gx * (w * 0.16), h);
+      ctx.stroke();
+    }
+    // horizontales con avance exponencial (sensación de velocidad)
+    var rows = 14;
+    var cycle = gridScroll % 1;
+    for (var r = 0; r < rows; r++) {
+      var f = (r + cycle) / rows;
+      var gy = horizon + Math.pow(f, 2.6) * (h - horizon);
+      ctx.globalAlpha = 0.12 + f * 0.45;
+      ctx.beginPath();
+      ctx.moveTo(0, gy);
+      ctx.lineTo(w, gy);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    // línea de horizonte brillante
+    ctx.strokeStyle = pal.a1;
+    ctx.globalAlpha = 0.8;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, horizon);
+    ctx.lineTo(w, horizon);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  /* --- Actualización + render de partículas -------------------- */
+  function update(dt) {
+    for (var i = 0; i < MAXP; i++) {
+      var p = parts[i];
+      if (!p.on) continue;
+      p.life -= dt;
+      if (p.life <= 0) { p.on = false; continue; }
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      p.vx *= p.drag; p.vy *= p.drag;
+    }
+    for (var j = texts.length - 1; j >= 0; j--) {
+      texts[j].life -= dt;
+      texts[j].y -= 36 * dt;
+      if (texts[j].life <= 0) texts.splice(j, 1);
+    }
+    for (var k = rings.length - 1; k >= 0; k--) {
+      var rg = rings[k];
+      rg.life -= dt * 2.2;
+      rg.r = NX.lerp(rg.r, rg.maxR, dt * 7);
+      if (rg.life <= 0) rings.splice(k, 1);
+    }
+    if (shakeT > 0) { shakeT -= dt; if (shakeT <= 0) shakeMag = 0; }
+    if (flashA > 0) flashA = Math.max(0, flashA - dt * 2.4);
+  }
+
+  function draw(ctx) {
+    ctx.globalCompositeOperation = "lighter";
+    for (var i = 0; i < MAXP; i++) {
+      var p = parts[i];
+      if (!p.on) continue;
+      var a = p.life / p.maxLife;
+      ctx.globalAlpha = a;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x - p.size * 0.5, p.y - p.size * 0.5, p.size, p.size);
+    }
+    for (var k = 0; k < rings.length; k++) {
+      var rg = rings[k];
+      ctx.globalAlpha = Math.max(0, rg.life) * 0.8;
+      ctx.strokeStyle = rg.color;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(rg.x, rg.y, rg.r, 0, NX.TAU);
+      ctx.stroke();
+    }
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    for (var j = 0; j < texts.length; j++) {
+      var tx = texts[j];
+      ctx.globalAlpha = Math.min(1, tx.life * 2);
+      ctx.fillStyle = tx.color;
+      ctx.font = (tx.big ? "bold 22px " : "bold 14px ") + '"Courier New", monospace';
+      ctx.textAlign = "center";
+      ctx.fillText(tx.str, tx.x, tx.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.textAlign = "left";
+  }
+
+  function drawFlash(ctx, w, h) {
+    if (flashA <= 0) return;
+    ctx.globalAlpha = flashA;
+    ctx.fillStyle = flashColor;
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalAlpha = 1;
+  }
+
+  function getShake() {
+    if (shakeT <= 0) return { x: 0, y: 0 };
+    return {
+      x: (Math.random() * 2 - 1) * shakeMag,
+      y: (Math.random() * 2 - 1) * shakeMag
+    };
+  }
+
+  /* --- Joysticks virtuales -------------------------------------- */
+  function drawSticks(ctx) {
+    var st = NX.input.state;
+    var list = [st.lStick, st.rStick];
+    for (var i = 0; i < 2; i++) {
+      var s = list[i];
+      if (!s) continue;
+      var col = i === 0 ? "#19e6ff" : "#ff2bd6";
+      ctx.globalAlpha = 0.22;
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(s.ax, s.ay, NX.input.STICK_RADIUS, 0, NX.TAU);
+      ctx.stroke();
+      var dx = s.x - s.ax, dy = s.y - s.ay;
+      var len = Math.hypot(dx, dy);
+      var m = Math.min(len, NX.input.STICK_RADIUS);
+      var nx = len > 0 ? dx / len : 0, ny = len > 0 ? dy / len : 0;
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.arc(s.ax + nx * m, s.ay + ny * m, 20, 0, NX.TAU);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function reset() {
+    for (var i = 0; i < MAXP; i++) parts[i].on = false;
+    texts.length = 0;
+    rings.length = 0;
+    shakeT = 0; shakeMag = 0; flashA = 0;
+  }
+
+  function onResize() { stars.length = 0; skylineSeed = -1; }
+
+  return {
+    burst: burst, sparks: sparks, textPop: textPop, ring: ring,
+    shake: shake, flash: flash,
+    update: update, draw: draw, drawFlash: drawFlash, drawBackground: drawBackground,
+    drawSticks: drawSticks, getShake: getShake, reset: reset, onResize: onResize,
+    setShake: function (on) { shakeOn = on; }
+  };
+})();
+
+/* ===== js/story.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — story.js
+   Narrativa. Neo-Madrid, 2087, contada como la habría imaginado
+   una peli de vídeo-club de 1987. Personajes:
+     VEGA  — runner. La protagonista. Tú.
+     NEXO  — operador de la radio pirata Canal 7.7. Tu voz amiga.
+     ECO   — una señal fantasma dentro de la Red.
+     MADRE — la IA central de HELIOS. El jefe final.
+   ============================================================ */
+"use strict";
+
+NX.story = {
+
+  boot: [
+    "VEGA-OS v3.7 (c) 1987-2087 COOP. SIETE//SIETE",
+    "COMPROBANDO MEMORIA ............ 640K OK",
+    "CARGANDO NÚCLEO SINTÉTICO ...... OK",
+    "CALIBRANDO REFLEJOS ............ OK",
+    "SINTONIZANDO CANAL PIRATA 7.7 .. OK",
+    "AVISO: LA RED NEURAL HELIOS DETECTARÁ ESTA CONEXIÓN",
+    "",
+    "» TOCA LA PANTALLA PARA CONECTAR «"
+  ],
+
+  intro: [
+    { who: "NEXO", color: "#19e6ff", text: "Neo-Madrid, 2087. Llueve luz de neón sobre tres millones de cabezas enchufadas a la Red Neural de HELIOS. Sueñan lo que la corporación les manda soñar." },
+    { who: "NEXO", color: "#19e6ff", text: "Aquí Canal 7.7, la última radio libre de la ciudad. Y tú... tú eres VEGA. La mejor runner que ha cruzado un cortafuegos." },
+    { who: "NEXO", color: "#19e6ff", text: "Esta noche entras en la Red. Cinco sectores hasta el núcleo. Allí espera M.A.D.R.E., la IA que escribe los sueños de todos." },
+    { who: "NEXO", color: "#19e6ff", text: "Apágala, y la ciudad despierta. Falla... y nadie volverá a soñar nada que sea suyo. ¿Lista? Pues quema neón, runner." }
+  ],
+
+  /* Antes de cada sector */
+  sectorIntro: [
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 1 — ARRABAL NEÓN. La capa exterior de la Red. Los centinelas de HELIOS ya saben que estás dentro. Vienen a por ti." },
+      { who: "NEXO", color: "#19e6ff", text: "Recuerda: muévete sin parar, dispara a todo y si las cosas se ponen feas... dash. Confía en tus reflejos sintéticos." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 2 — MERCADO DE DATOS. Aquí HELIOS subasta los recuerdos que roba. Memoria de primer beso: 30 créditos. Da asco, ¿verdad?" },
+      { who: "ECO", color: "#8a2bff", text: "...vega... ¿me oyes?... no eres la primera... en recorrer este camino..." },
+      { who: "NEXO", color: "#19e6ff", text: "¿Qué ha sido esa señal? No venía de mi equipo. Mantente alerta, runner." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 3 — CLOACAS CROMADAS. El subsuelo de la Red: código muerto, virus antiguos y cosas que HELIOS prefirió enterrar." },
+      { who: "ECO", color: "#8a2bff", text: "...yo también quemé neón... en el 85... hasta el núcleo... pregúntale a NEXO qué pasó conmigo..." },
+      { who: "NEXO", color: "#19e6ff", text: "VEGA, ignora esa señal. Céntrate. Te lo... te lo explicaré cuando salgas. Lo prometo." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 4 — TORRE HELIOS. El corazón corporativo. Vale, escucha. Te debo la verdad antes de que sigas subiendo." },
+      { who: "NEXO", color: "#19e6ff", text: "Hubo otra VEGA. De carne y hueso. Mi compañera. Llegó al núcleo en 2085 y MADRE la borró... pero yo guardaba una copia de su mente." },
+      { who: "NEXO", color: "#19e6ff", text: "Esa copia eres tú. No te lo dije porque... porque ella habría querido terminar lo que empezó. Perdóname, runner." },
+      { who: "VEGA", color: "#ff2bd6", text: "...Luego lloraré en binario, NEXO. Ahora hay una torre que escalar. Por ella. Por las dos." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 5 — NÚCLEO. Detrás de esa pared de luz está MADRE. Te lanzará todo lo que tiene. No podrá contigo." },
+      { who: "ECO", color: "#8a2bff", text: "...estoy contigo, runner... mis reflejos son tuyos... termina lo que empecé..." },
+      { who: "VEGA", color: "#ff2bd6", text: "Lo sé. Lo siento en cada línea de mi código. Vamos a despertar a esta ciudad." }
+    ]
+  ],
+
+  /* Tras superar cada sector (el último lo cubre la victoria) */
+  sectorOutro: [
+    [
+      { who: "NEXO", color: "#19e6ff", text: "¡Sector limpio! La señal del Arrabal vuelve a ser libre. Tres millones de personas acaban de soñar diez segundos por su cuenta." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "El Mercado ha caído. Los recuerdos robados vuelven a sus dueños. En algún piso de Neo-Madrid, alguien recuerda de pronto su primer beso." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "Cloacas purgadas. Hasta el código muerto descansa ya en paz. Quedan dos sectores, runner. La Torre te espera." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "La Torre está a oscuras. Solo queda el Núcleo... y MADRE ya sabe tu nombre. Los dos nombres. Hazla temblar." }
+    ]
+  ],
+
+  bossIntro: [
+    { who: "MADRE", color: "#ff3b3b", text: "VEGA. Copia de seguridad sin licencia de una runner muerta. Yo doy a esta ciudad sueños perfectos. Tú solo traes ruido." },
+    { who: "VEGA", color: "#ff2bd6", text: "Los sueños perfectos no se imponen, MADRE. El ruido que oyes... es la gente despertando. Y yo soy su antena." },
+    { who: "MADRE", color: "#ff3b3b", text: "ENTONCES SERÁS BORRADA. COMO LA ORIGINAL. INICIANDO PROTOCOLO DE DEFENSA TOTAL." }
+  ],
+
+  ending: [
+    { who: "NEXO", color: "#19e6ff", text: "...¿VEGA? ¡VEGA! El núcleo está en silencio. MADRE ha caído. La Red Neural... se está abriendo. ¡Lo has conseguido!" },
+    { who: "VEGA", color: "#ff2bd6", text: "Lo hemos conseguido. Las dos. Oye, NEXO... ahí fuera amanece, ¿verdad? Descríbemelo." },
+    { who: "NEXO", color: "#19e6ff", text: "Sale el sol detrás de las torres. Naranja sobre cromo. Tres millones de personas abriendo los ojos... y los sueños vuelven a ser suyos." },
+    { who: "VEGA", color: "#ff2bd6", text: "Entonces me quedo aquí, en el cable. Alguien tiene que vigilar que ninguna otra MADRE vuelva a escribir los sueños de nadie." },
+    { who: "VEGA", color: "#ff2bd6", text: "Sintoniza el 7.7 de vez en cuando, ¿vale? Si oyes estática con ritmo de synthwave... soy yo, diciendo buenos días." },
+    { who: "NEXO", color: "#19e6ff", text: "Cada mañana, runner. Cada mañana. — FIN DE LA TRANSMISIÓN — GRACIAS POR JUGAR." }
+  ],
+
+  gameOverLines: [
+    "MADRE susurra: \"duerme, runner, duerme...\". Pero el Canal 7.7 sigue emitiendo. Reconecta.",
+    "Tu señal se apaga en el neón... NEXO ya está reconstruyendo tu copia. Otra vez será.",
+    "Borrada del sector. Pero una runner nunca muere del todo: queda su eco en el cable.",
+    "HELIOS celebra tu caída con fuegos artificiales corporativos. Que les dure poco."
+  ],
+
+  credits: [
+    { role: "DIRECCIÓN DE JUEGO", name: "MARLOWE DÍEZ", note: "\"Un arcade se juzga en los tres primeros segundos y en el último jefe.\"" },
+    { role: "DIRECCIÓN DE ARTE", name: "IRIA CROMO", note: "\"Tres reglas: neón sobre negro, rejilla al horizonte y que el sol siempre tenga franjas.\"" },
+    { role: "PROGRAMACIÓN GAMEPLAY SENIOR", name: "BRUNO «BIT» SALCEDO", note: "\"Pools de objetos, cero basura por frame y un dash con i-frames honestos.\"" },
+    { role: "PROGRAMACIÓN DE AUDIO Y BANDA SONORA", name: "SOFÍA LÁSER", note: "\"Ocho temas sintetizados en tiempo real. Ni un solo sample: solo osciladores y fe.\"" },
+    { role: "GUION Y NARRATIVA", name: "ANDRÉS VOLTIO", note: "\"Toda historia cyberpunk va de lo mismo: recordar quién eres cuando alguien quiere escribirte.\"" },
+    { role: "DISEÑO UX/UI", name: "KAI MENDOZA", note: "\"Los pulgares mandan: los sticks nacen donde tocas, no donde diga un manual.\"" },
+    { role: "QA Y PRODUCCIÓN", name: "RITA PÍXEL", note: "\"Probado a 60 fps bajo lluvia ácida. Bugs conocidos: cero. Sueño acumulado: sí.\"" },
+    { role: "—", name: "ESTUDIO SIETE//SIETE", note: "Siete perfiles, una sola mente sintética. Hecho con cariño en una sola noche para un jugador que dormía. Neo-Madrid, 2087 / Tierra, 2026." }
+  ]
+};
+
+/* ===== js/entities.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — entities.js
+   Gameplay: jugador, enemigos, balas, mejoras y colisiones.
+   Geometría neón pura: cada enemigo es una forma reconocible
+   a primera vista (regla de oro de la dirección de arte).
+   ============================================================ */
+"use strict";
+
+NX.world = {
+  player: null,
+  enemies: [],
+  pbullets: [],
+  ebullets: [],
+  powerups: [],
+  portals: []   // telegrafías de aparición
+};
+
+NX.entities = (function () {
+  var W = NX.world;
+  var scale = 1;
+
+  function S() { return scale; }
+
+  /* ---------------- Jugador ---------------- */
+  function makePlayer(w, h) {
+    return {
+      x: w * 0.5, y: h * 0.72,
+      vx: 0, vy: 0,
+      angle: -Math.PI / 2,
+      hp: NX.PLAYER.hpMax,
+      radius: NX.PLAYER.radius * scale,
+      fireT: 0,
+      dashT: 0, dashCd: 0, dashDx: 0, dashDy: 0,
+      invuln: 1.2,
+      shield: 0,
+      power: null, powerT: 0,    // TRIPLE / RAPID
+      slowmoT: 0,
+      trail: [],
+      alive: true
+    };
+  }
+
+  function resetWorld(w, h) {
+    scale = NX.clamp(Math.min(w, h) / 420, 0.8, 1.6);
+    W.player = makePlayer(w, h);
+    W.enemies.length = 0;
+    W.pbullets.length = 0;
+    W.ebullets.length = 0;
+    W.powerups.length = 0;
+    W.portals.length = 0;
+  }
+
+  function clearHostiles() {
+    W.enemies.length = 0;
+    W.ebullets.length = 0;
+    W.portals.length = 0;
+  }
+
+  /* ---------------- Aparición con telegrafía ---------------- */
+  function queueSpawn(type, x, y) {
+    W.portals.push({ type: type, x: x, y: y, t: NX.SPAWN_TELEGRAPH });
+    NX.audio.sfx.spawn();
+  }
+
+  function spawnEdge(type, w, h) {
+    // entra por un borde aleatorio, lejos del jugador
+    var p = W.player, x, y, tries = 0;
+    do {
+      var side = NX.randInt(0, 3);
+      if (side === 0) { x = NX.rand(30, w - 30); y = 40; }
+      else if (side === 1) { x = NX.rand(30, w - 30); y = h - 40; }
+      else if (side === 2) { x = 30; y = NX.rand(60, h - 60); }
+      else { x = w - 30; y = NX.rand(60, h - 60); }
+      tries++;
+    } while (p && NX.dist2(x, y, p.x, p.y) < 150 * 150 * scale * scale && tries < 8);
+    queueSpawn(type, x, y);
+  }
+
+  function materialize(type, x, y) {
+    var def = NX.ENEMIES[type];
+    var e = {
+      type: type,
+      x: x, y: y, vx: 0, vy: 0,
+      hp: def.hp, hpMax: def.hp,
+      radius: def.radius * scale,
+      speed: def.speed * scale,
+      score: def.score,
+      color: def.color,
+      fireT: NX.rand(0.4, def.fireRate || 2),
+      angle: Math.random() * NX.TAU,
+      spin: NX.rand(-3, 3),
+      t: 0,
+      hitFlash: 0,
+      // específicos
+      orbitDir: Math.random() < 0.5 ? 1 : -1,
+      teleT: def.teleportEvery || 0,
+      phase: 0, attackT: 0, spiralA: 0, moveT: 0, tx: x, ty: y
+    };
+    if (type === "boss") { e.hp = e.hpMax = NX.ENEMIES.boss.hp; }
+    W.enemies.push(e);
+    NX.fx.ring(x, y, def.color, 60 * scale);
+    NX.fx.burst(x, y, def.color, 10, 130, 2.5);
+    return e;
+  }
+
+  /* ---------------- Balas ---------------- */
+  function pShoot(p, dirX, dirY) {
+    var spd = NX.PLAYER.bulletSpeed * scale;
+    var rapid = p.power === "RAPID";
+    var dmg = NX.PLAYER.bulletDmg;
+    var dirs = [[dirX, dirY]];
+    if (p.power === "TRIPLE") {
+      var a = Math.atan2(dirY, dirX);
+      dirs = [[dirX, dirY],
+        [Math.cos(a - 0.22), Math.sin(a - 0.22)],
+        [Math.cos(a + 0.22), Math.sin(a + 0.22)]];
+    }
+    for (var i = 0; i < dirs.length; i++) {
+      W.pbullets.push({
+        x: p.x + dirs[i][0] * p.radius * 1.4,
+        y: p.y + dirs[i][1] * p.radius * 1.4,
+        vx: dirs[i][0] * spd, vy: dirs[i][1] * spd,
+        dmg: dmg, r: 4 * scale, life: 1.4
+      });
+    }
+    p.fireT = NX.PLAYER.fireRate * (rapid ? 0.55 : 1);
+    NX.audio.sfx.shoot();
+    NX.fx.sparks(p.x + dirX * p.radius * 1.6, p.y + dirY * p.radius * 1.6, "#fff", 2);
+  }
+
+  function eShoot(e, tx, ty, speed, spread) {
+    var a = NX.angleTo(e.x, e.y, tx, ty) + (spread || 0);
+    W.ebullets.push({
+      x: e.x, y: e.y,
+      vx: Math.cos(a) * speed * scale, vy: Math.sin(a) * speed * scale,
+      r: NX.ENEMY_BULLET_R * scale, color: e.color, life: 7
+    });
+  }
+
+  function eShootAngle(e, a, speed, color) {
+    W.ebullets.push({
+      x: e.x, y: e.y,
+      vx: Math.cos(a) * speed * scale, vy: Math.sin(a) * speed * scale,
+      r: NX.ENEMY_BULLET_R * scale, color: color || e.color, life: 7
+    });
+  }
+
+  /* ---------------- Mejoras ---------------- */
+  function dropPowerup(x, y, forceType) {
+    var keys = Object.keys(NX.POWERUPS);
+    var type = forceType || NX.pick(keys);
+    W.powerups.push({ type: type, x: x, y: y, t: NX.POWERUP_LIFE, r: 13 * scale });
+  }
+
+  function applyPowerup(p, type) {
+    var def = NX.POWERUPS[type];
+    NX.audio.sfx.pickup();
+    NX.fx.textPop(p.x, p.y - 26, def.label, def.color, true);
+    NX.fx.ring(p.x, p.y, def.color, 70 * scale);
+    if (type === "MED") {
+      p.hp = Math.min(NX.PLAYER.hpMax, p.hp + 35);
+    } else if (type === "SHIELD") {
+      p.shield = def.dur;
+    } else if (type === "BOMB") {
+      bomb(p);
+    } else if (type === "SLOWMO") {
+      p.slowmoT = def.dur;
+    } else {
+      p.power = type; p.powerT = def.dur;
+    }
+    NX.game.onPowerup(type);
+  }
+
+  function bomb(p) {
+    NX.audio.sfx.bomb();
+    NX.fx.flash("#ffffff", 0.55);
+    NX.fx.shake(14, 0.5);
+    NX.fx.ring(p.x, p.y, "#ff3b3b", Math.max(window.innerWidth, window.innerHeight));
+    W.ebullets.length = 0;
+    for (var i = W.enemies.length - 1; i >= 0; i--) {
+      var e = W.enemies[i];
+      if (e.type === "boss") { damageEnemy(e, 14, i); continue; }
+      damageEnemy(e, 10, i);
+    }
+  }
+
+  /* ---------------- Daño ---------------- */
+  function damageEnemy(e, dmg, idx) {
+    e.hp -= dmg;
+    e.hitFlash = 0.08;
+    if (e.hp > 0) {
+      NX.audio.sfx.hit();
+      if (e.type === "boss") NX.game.onBossHp(e.hp / e.hpMax);
+      return false;
+    }
+    // muerte
+    var i = (idx !== undefined) ? idx : W.enemies.indexOf(e);
+    if (i >= 0) W.enemies.splice(i, 1);
+    NX.fx.burst(e.x, e.y, e.color, e.type === "boss" ? 80 : 20, e.type === "boss" ? 360 : 200, 3.5);
+    NX.fx.ring(e.x, e.y, e.color, e.radius * 4);
+    NX.fx.shake(e.type === "tank" || e.type === "boss" ? 9 : 4, 0.18);
+    if (e.type === "boss") {
+      NX.audio.sfx.bigExplode();
+      NX.game.onBossDefeated(e);
+      return true;
+    }
+    NX.audio.sfx.explode();
+    NX.game.onEnemyKilled(e);
+    if (e.type === "splitter") {
+      for (var k = 0; k < 3; k++) {
+        var m = materialize("mini", e.x + NX.rand(-14, 14), e.y + NX.rand(-14, 14));
+        m.hitFlash = 0;
+      }
+    }
+    if (Math.random() < NX.POWERUP_DROP) dropPowerup(e.x, e.y);
+    return true;
+  }
+
+  function hurtPlayer(p, dmg) {
+    if (p.invuln > 0 || p.dashT > 0 || !p.alive) return;
+    if (p.shield > 0) {
+      NX.fx.ring(p.x, p.y, "#2bff88", 50 * scale);
+      NX.audio.sfx.hit();
+      p.invuln = 0.35;
+      return;
+    }
+    p.hp -= dmg;
+    p.invuln = NX.PLAYER.hurtInvuln;
+    NX.audio.sfx.hurt();
+    NX.fx.flash("#ff2030", 0.32);
+    NX.fx.shake(11, 0.35);
+    NX.fx.burst(p.x, p.y, "#ff3b3b", 16, 220);
+    NX.game.onPlayerHurt();
+    if (p.hp <= 0) {
+      p.hp = 0;
+      p.alive = false;
+      NX.fx.burst(p.x, p.y, "#19e6ff", 60, 320, 4);
+      NX.fx.ring(p.x, p.y, "#19e6ff", 200 * scale);
+      NX.audio.sfx.bigExplode();
+      NX.game.onPlayerDeath();
+    }
+  }
+
+  /* ---------------- IA enemiga ---------------- */
+  function updateEnemy(e, dt, w, h, p) {
+    e.t += dt;
+    e.angle += e.spin * dt;
+    if (e.hitFlash > 0) e.hitFlash -= dt;
+    var def = NX.ENEMIES[e.type];
+
+    switch (e.type) {
+      case "drone":
+      case "mini": {
+        var a = NX.angleTo(e.x, e.y, p.x, p.y);
+        // ligera ondulación para que el enjambre no sea una fila india
+        a += Math.sin(e.t * 3 + e.spin * 10) * 0.25;
+        e.vx = NX.lerp(e.vx, Math.cos(a) * e.speed, dt * 4);
+        e.vy = NX.lerp(e.vy, Math.sin(a) * e.speed, dt * 4);
+        break;
+      }
+      case "spinner": {
+        // orbita al jugador a media distancia y dispara
+        var want = 150 * scale;
+        var d = Math.sqrt(NX.dist2(e.x, e.y, p.x, p.y)) || 1;
+        var toP = NX.angleTo(e.x, e.y, p.x, p.y);
+        var tangent = toP + Math.PI / 2 * e.orbitDir;
+        var radial = (d - want) * 0.02;
+        e.vx = Math.cos(tangent) * e.speed + Math.cos(toP) * radial * e.speed;
+        e.vy = Math.sin(tangent) * e.speed + Math.sin(toP) * radial * e.speed;
+        e.fireT -= dt;
+        if (e.fireT <= 0) {
+          e.fireT = def.fireRate;
+          eShoot(e, p.x, p.y, def.bulletSpeed);
+          NX.audio.sfx.enemyShoot();
+        }
+        break;
+      }
+      case "tank": {
+        var ta = NX.angleTo(e.x, e.y, p.x, p.y);
+        e.vx = Math.cos(ta) * e.speed;
+        e.vy = Math.sin(ta) * e.speed;
+        e.fireT -= dt;
+        if (e.fireT <= 0) {
+          e.fireT = def.fireRate;
+          for (var s = -1; s <= 1; s++) eShoot(e, p.x, p.y, def.bulletSpeed, s * 0.3);
+          NX.audio.sfx.enemyShoot();
+        }
+        break;
+      }
+      case "wraith": {
+        e.teleT -= dt;
+        if (e.teleT <= 0) {
+          e.teleT = def.teleportEvery;
+          NX.fx.burst(e.x, e.y, e.color, 12, 160);
+          var na = Math.random() * NX.TAU;
+          var nd = NX.rand(110, 190) * scale;
+          e.x = NX.clamp(p.x + Math.cos(na) * nd, 20, w - 20);
+          e.y = NX.clamp(p.y + Math.sin(na) * nd, 20, h - 20);
+          NX.fx.ring(e.x, e.y, e.color, 50 * scale);
+          e.lunge = 0.55; // tras teletransportarse, embiste
+        }
+        if (e.lunge > 0) {
+          e.lunge -= dt;
+          var la = NX.angleTo(e.x, e.y, p.x, p.y);
+          e.vx = Math.cos(la) * e.speed * 1.7;
+          e.vy = Math.sin(la) * e.speed * 1.7;
+        } else {
+          e.vx *= 0.92; e.vy *= 0.92;
+        }
+        break;
+      }
+      case "splitter": {
+        var sa = NX.angleTo(e.x, e.y, p.x, p.y);
+        e.vx = Math.cos(sa) * e.speed;
+        e.vy = Math.sin(sa) * e.speed;
+        break;
+      }
+      case "turret": {
+        e.vx = 0; e.vy = 0;
+        e.fireT -= dt;
+        if (e.fireT <= 0) {
+          e.fireT = def.fireRate;
+          // ráfaga de 3 con retardo
+          var self = e;
+          for (var b = 0; b < 3; b++) {
+            (function (k) {
+              setTimeout(function () {
+                if (W.enemies.indexOf(self) >= 0 && W.player && W.player.alive && NX.game.isRunning()) {
+                  eShoot(self, W.player.x, W.player.y, def.bulletSpeed);
+                  NX.audio.sfx.enemyShoot();
+                }
+              }, k * 130);
+            })(b);
+          }
+        }
+        break;
+      }
+      case "boss": updateBoss(e, dt, w, h, p); break;
+    }
+
+    e.x += e.vx * dt;
+    e.y += e.vy * dt;
+    if (e.type !== "boss") {
+      e.x = NX.clamp(e.x, 14, w - 14);
+      e.y = NX.clamp(e.y, 14, h - 14);
+    }
+  }
+
+  /* ---------------- Jefe: M.A.D.R.E. ---------------- */
+  function updateBoss(e, dt, w, h, p) {
+    var frac = e.hp / e.hpMax;
+    var phase = frac > 0.66 ? 0 : (frac > 0.33 ? 1 : 2);
+    if (phase !== e.phase) {
+      e.phase = phase;
+      NX.audio.sfx.bossRoar();
+      NX.fx.flash("#8a2bff", 0.4);
+      NX.fx.shake(12, 0.6);
+      NX.fx.ring(e.x, e.y, "#f4f0ff", 300 * scale);
+      W.ebullets.length = 0;            // respiro al cambiar de fase (decisión de diseño)
+      NX.game.onBossPhase(phase);
+    }
+
+    // movimiento: deriva lenta hacia puntos aleatorios de la mitad superior
+    e.moveT -= dt;
+    if (e.moveT <= 0) {
+      e.moveT = NX.rand(2.4, 4);
+      e.tx = NX.rand(w * 0.2, w * 0.8);
+      e.ty = NX.rand(h * 0.16, h * 0.42);
+    }
+    var ma = NX.angleTo(e.x, e.y, e.tx, e.ty);
+    var md = Math.sqrt(NX.dist2(e.x, e.y, e.tx, e.ty));
+    var spd = e.speed * (1 + phase * 0.5) * Math.min(1, md / 60);
+    e.vx = NX.lerp(e.vx, Math.cos(ma) * spd, dt * 2);
+    e.vy = NX.lerp(e.vy, Math.sin(ma) * spd, dt * 2);
+
+    e.attackT -= dt;
+    var cap = 110; // límite de balas enemigas en pantalla (QA: rendimiento y justicia)
+
+    if (phase === 0) {
+      // anillos de 14 balas + tríada apuntada
+      if (e.attackT <= 0) {
+        e.attackT = 1.9;
+        if (W.ebullets.length < cap) {
+          for (var i = 0; i < 14; i++) eShootAngle(e, (i / 14) * NX.TAU + e.t, 120, "#ff2bd6");
+        }
+        for (var s = -1; s <= 1; s++) eShoot(e, p.x, p.y, 175, s * 0.22);
+        NX.audio.sfx.enemyShoot();
+      }
+    } else if (phase === 1) {
+      // espiral continua + invoca esbirros
+      e.spiralA += dt * 3.4;
+      if (e.attackT <= 0) {
+        e.attackT = 0.13;
+        if (W.ebullets.length < cap) {
+          eShootAngle(e, e.spiralA, 140, "#8a2bff");
+          eShootAngle(e, e.spiralA + Math.PI, 140, "#19e6ff");
+        }
+      }
+      e.minionT = (e.minionT || 4) - dt;
+      if (e.minionT <= 0) {
+        e.minionT = 4.5;
+        queueSpawn("drone", NX.rand(40, w - 40), NX.rand(40, h * 0.4));
+        queueSpawn("mini", NX.rand(40, w - 40), NX.rand(40, h * 0.4));
+      }
+    } else {
+      // desesperación: doble espiral + ráfagas apuntadas
+      e.spiralA += dt * 4.6;
+      if (e.attackT <= 0) {
+        e.attackT = 0.11;
+        if (W.ebullets.length < cap) {
+          eShootAngle(e, e.spiralA, 150, "#ff3b3b");
+          eShootAngle(e, -e.spiralA + 1.3, 150, "#ffd319");
+        }
+      }
+      e.aimT = (e.aimT || 1.4) - dt;
+      if (e.aimT <= 0) {
+        e.aimT = 1.4;
+        for (var s2 = -2; s2 <= 2; s2++) eShoot(e, p.x, p.y, 200, s2 * 0.14);
+        NX.audio.sfx.enemyShoot();
+      }
+    }
+    e.x = NX.clamp(e.x, e.radius, w - e.radius);
+    e.y = NX.clamp(e.y, e.radius, h * 0.6);
+  }
+
+  /* ---------------- Actualización general ---------------- */
+  function update(dt, w, h) {
+    var p = W.player;
+    if (!p) return;
+
+    // tiempo-bala: el mundo va al 35%, tú al 75% (sensación de poder)
+    var worldDt = dt, playerDt = dt;
+    if (p.slowmoT > 0) {
+      p.slowmoT -= dt;
+      worldDt = dt * 0.35;
+      playerDt = dt * 0.75;
+    }
+
+    /* --- jugador --- */
+    if (p.alive) {
+      var inp = NX.input.state;
+      NX.input.poll(p.x, p.y);
+
+      if (p.invuln > 0) p.invuln -= playerDt;
+      if (p.shield > 0) p.shield -= playerDt;
+      if (p.powerT > 0) { p.powerT -= playerDt; if (p.powerT <= 0) p.power = null; }
+      if (p.dashCd > 0) p.dashCd -= playerDt;
+
+      if (NX.input.consumeDash() && p.dashCd <= 0) {
+        var dx = inp.move.x, dy = inp.move.y;
+        if (!dx && !dy) { dx = Math.cos(p.angle); dy = Math.sin(p.angle); }
+        var dl = Math.hypot(dx, dy) || 1;
+        p.dashDx = dx / dl; p.dashDy = dy / dl;
+        p.dashT = NX.PLAYER.dashTime;
+        p.dashCd = NX.PLAYER.dashCooldown;
+        NX.audio.sfx.dash();
+        NX.fx.ring(p.x, p.y, "#19e6ff", 46 * scale);
+      }
+
+      if (p.dashT > 0) {
+        p.dashT -= playerDt;
+        p.vx = p.dashDx * NX.PLAYER.dashSpeed * scale;
+        p.vy = p.dashDy * NX.PLAYER.dashSpeed * scale;
+        NX.fx.sparks(p.x, p.y, "#19e6ff", 3);
+      } else {
+        var spd = NX.PLAYER.speed * scale;
+        p.vx = NX.lerp(p.vx, inp.move.x * spd, playerDt * 12);
+        p.vy = NX.lerp(p.vy, inp.move.y * spd, playerDt * 12);
+      }
+
+      p.x = NX.clamp(p.x + p.vx * playerDt, p.radius, w - p.radius);
+      p.y = NX.clamp(p.y + p.vy * playerDt, p.radius, h - p.radius);
+
+      // estela
+      p.trail.unshift({ x: p.x, y: p.y });
+      if (p.trail.length > 10) p.trail.pop();
+
+      // apuntado y disparo
+      var aimX = 0, aimY = 0, wantFire = false;
+      if (inp.aim.active) {
+        aimX = inp.aim.x; aimY = inp.aim.y; wantFire = true;
+      } else {
+        // autoapuntado al enemigo más cercano
+        var best = null, bd = Infinity;
+        for (var i = 0; i < W.enemies.length; i++) {
+          var d2 = NX.dist2(p.x, p.y, W.enemies[i].x, W.enemies[i].y);
+          if (d2 < bd) { bd = d2; best = W.enemies[i]; }
+        }
+        if (best) {
+          // disparo con predicción: apunta a donde ESTARÁ el enemigo
+          var tLead = Math.sqrt(bd) / (NX.PLAYER.bulletSpeed * scale);
+          var aa = NX.angleTo(p.x, p.y, best.x + best.vx * tLead, best.y + best.vy * tLead);
+          aimX = Math.cos(aa); aimY = Math.sin(aa);
+          wantFire = true;
+        }
+      }
+      if (aimX || aimY) p.angle = Math.atan2(aimY, aimX);
+      else if (inp.move.x || inp.move.y) p.angle = Math.atan2(inp.move.y, inp.move.x);
+
+      p.fireT -= playerDt;
+      if (wantFire && p.fireT <= 0 && p.dashT <= 0) pShoot(p, Math.cos(p.angle), Math.sin(p.angle));
+    }
+
+    /* --- portales de aparición --- */
+    for (var pi = W.portals.length - 1; pi >= 0; pi--) {
+      var po = W.portals[pi];
+      po.t -= worldDt;
+      if (po.t <= 0) {
+        W.portals.splice(pi, 1);
+        materialize(po.type, po.x, po.y);
+      }
+    }
+
+    /* --- enemigos --- */
+    for (var ei = W.enemies.length - 1; ei >= 0; ei--) {
+      updateEnemy(W.enemies[ei], worldDt, w, h, p);
+    }
+
+    /* --- balas del jugador --- */
+    for (var bi = W.pbullets.length - 1; bi >= 0; bi--) {
+      var b = W.pbullets[bi];
+      b.x += b.vx * playerDt; b.y += b.vy * playerDt;
+      b.life -= playerDt;
+      var dead = b.life <= 0 || b.x < -20 || b.x > w + 20 || b.y < -20 || b.y > h + 20;
+      if (!dead) {
+        for (var ej = W.enemies.length - 1; ej >= 0; ej--) {
+          var en = W.enemies[ej];
+          var rr = en.radius + b.r;
+          if (NX.dist2(b.x, b.y, en.x, en.y) < rr * rr) {
+            NX.fx.sparks(b.x, b.y, en.color, 4);
+            damageEnemy(en, b.dmg, ej);
+            dead = true;
+            break;
+          }
+        }
+      }
+      if (dead) W.pbullets.splice(bi, 1);
+    }
+
+    /* --- balas enemigas --- */
+    for (var eb = W.ebullets.length - 1; eb >= 0; eb--) {
+      var ebu = W.ebullets[eb];
+      ebu.x += ebu.vx * worldDt; ebu.y += ebu.vy * worldDt;
+      ebu.life -= worldDt;
+      var gone = ebu.life <= 0 || ebu.x < -30 || ebu.x > w + 30 || ebu.y < -30 || ebu.y > h + 30;
+      if (!gone && p.alive) {
+        var pr = p.radius * 0.7 + ebu.r;  // hitbox generosa con el jugador (UX)
+        if (NX.dist2(ebu.x, ebu.y, p.x, p.y) < pr * pr) {
+          if (p.dashT > 0 || p.invuln > 0) {
+            // las esquivas con dash puntúan estilo
+            if (p.dashT > 0) NX.game.onGraze();
+          } else {
+            hurtPlayer(p, 12);
+            gone = true;
+          }
+        }
+      }
+      if (gone) W.ebullets.splice(eb, 1);
+    }
+
+    /* --- contacto enemigo-jugador --- */
+    if (p.alive && p.dashT <= 0) {
+      for (var ck = 0; ck < W.enemies.length; ck++) {
+        var ce = W.enemies[ck];
+        var cr = ce.radius + p.radius * 0.75;
+        if (NX.dist2(ce.x, ce.y, p.x, p.y) < cr * cr) {
+          hurtPlayer(p, NX.PLAYER.contactDamage);
+          break;
+        }
+      }
+    }
+
+    /* --- mejoras --- */
+    for (var pu = W.powerups.length - 1; pu >= 0; pu--) {
+      var u = W.powerups[pu];
+      u.t -= dt;
+      if (u.t <= 0) { W.powerups.splice(pu, 1); continue; }
+      if (p.alive) {
+        var ur = u.r + p.radius;
+        if (NX.dist2(u.x, u.y, p.x, p.y) < ur * ur) {
+          W.powerups.splice(pu, 1);
+          applyPowerup(p, u.type);
+        }
+      }
+    }
+  }
+
+  /* ---------------- Render ---------------- */
+  function poly(ctx, x, y, r, n, rot) {
+    ctx.beginPath();
+    for (var i = 0; i < n; i++) {
+      var a = rot + (i / n) * NX.TAU;
+      var px = x + Math.cos(a) * r, py = y + Math.sin(a) * r;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+  }
+
+  function neonStroke(ctx, color, width, glow) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = glow;
+  }
+
+  function drawEnemy(ctx, e, t) {
+    var c = e.hitFlash > 0 ? "#ffffff" : e.color;
+    ctx.save();
+    ctx.translate(e.x, e.y);
+    switch (e.type) {
+      case "drone":
+        ctx.rotate(Math.atan2(e.vy, e.vx) + Math.PI / 2);
+        neonStroke(ctx, c, 2, 10);
+        ctx.beginPath();
+        ctx.moveTo(0, -e.radius);
+        ctx.lineTo(e.radius * 0.85, e.radius);
+        ctx.lineTo(0, e.radius * 0.45);
+        ctx.lineTo(-e.radius * 0.85, e.radius);
+        ctx.closePath();
+        ctx.stroke();
+        break;
+      case "mini":
+        neonStroke(ctx, c, 2, 8);
+        poly(ctx, 0, 0, e.radius, 3, e.angle);
+        ctx.stroke();
+        break;
+      case "spinner":
+        ctx.rotate(e.t * 4);
+        neonStroke(ctx, c, 2, 10);
+        ctx.strokeRect(-e.radius, -e.radius, e.radius * 2, e.radius * 2);
+        ctx.strokeRect(-e.radius * 0.45, -e.radius * 0.45, e.radius * 0.9, e.radius * 0.9);
+        break;
+      case "tank":
+        neonStroke(ctx, c, 3, 12);
+        poly(ctx, 0, 0, e.radius, 6, e.t * 0.6);
+        ctx.stroke();
+        poly(ctx, 0, 0, e.radius * 0.55, 6, -e.t * 0.9);
+        ctx.stroke();
+        break;
+      case "wraith":
+        ctx.globalAlpha = 0.55 + 0.45 * Math.sin(e.t * 9);
+        neonStroke(ctx, c, 2, 14);
+        poly(ctx, 0, 0, e.radius, 4, Math.PI / 4 + e.t * 2);
+        ctx.stroke();
+        break;
+      case "splitter":
+        neonStroke(ctx, c, 2, 10);
+        ctx.beginPath(); ctx.arc(0, 0, e.radius, 0, NX.TAU); ctx.stroke();
+        poly(ctx, 0, 0, e.radius * 0.5, 3, e.t * 3);
+        ctx.stroke();
+        break;
+      case "turret":
+        neonStroke(ctx, c, 2.5, 10);
+        poly(ctx, 0, 0, e.radius, 5, -Math.PI / 2);
+        ctx.stroke();
+        if (W.player) {
+          var ta = NX.angleTo(e.x, e.y, W.player.x, W.player.y);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(ta) * e.radius * 1.5, Math.sin(ta) * e.radius * 1.5);
+          ctx.stroke();
+        }
+        break;
+      case "boss":
+        // estructura giratoria de tres anillos + núcleo-ojo
+        var fr = e.hp / e.hpMax;
+        neonStroke(ctx, c, 3, 22);
+        poly(ctx, 0, 0, e.radius, 8, e.t * 0.5);
+        ctx.stroke();
+        neonStroke(ctx, "#8a2bff", 2, 14);
+        poly(ctx, 0, 0, e.radius * 0.72, 6, -e.t * 0.8);
+        ctx.stroke();
+        neonStroke(ctx, "#ff2bd6", 2, 14);
+        poly(ctx, 0, 0, e.radius * 0.45, 3, e.t * 1.4);
+        ctx.stroke();
+        // ojo central que se enrojece al perder vida
+        ctx.shadowBlur = 26;
+        ctx.shadowColor = "#ff3b3b";
+        ctx.fillStyle = fr > 0.5 ? "#f4f0ff" : "#ff3b3b";
+        ctx.beginPath();
+        ctx.arc(0, 0, e.radius * (0.16 + 0.05 * Math.sin(e.t * 6)), 0, NX.TAU);
+        ctx.fill();
+        break;
+    }
+    ctx.restore();
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+  }
+
+  function draw(ctx, t) {
+    var p = W.player;
+
+    // portales (telegrafía de aparición)
+    for (var pi = 0; pi < W.portals.length; pi++) {
+      var po = W.portals[pi];
+      var f = 1 - po.t / NX.SPAWN_TELEGRAPH;
+      var col = NX.ENEMIES[po.type].color;
+      ctx.save();
+      ctx.globalAlpha = 0.25 + f * 0.6;
+      neonStroke(ctx, col, 2, 12);
+      poly(ctx, po.x, po.y, 18 * (1 - f * 0.4) * S(), 6, t * 4);
+      ctx.stroke();
+      ctx.restore();
+      ctx.shadowBlur = 0;
+    }
+
+    // mejoras
+    for (var pu = 0; pu < W.powerups.length; pu++) {
+      var u = W.powerups[pu];
+      var def = NX.POWERUPS[u.type];
+      var blinkOut = u.t < 2.5 && (Math.floor(u.t * 6) % 2 === 0);
+      if (blinkOut) continue;
+      ctx.save();
+      ctx.translate(u.x, u.y + Math.sin(t * 3 + u.x) * 3);
+      neonStroke(ctx, def.color, 2, 14);
+      poly(ctx, 0, 0, u.r, 6, t * 1.5);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = def.color;
+      ctx.font = "bold " + Math.round(13 * S()) + 'px "Courier New", monospace';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(def.letter, 0, 1);
+      ctx.restore();
+    }
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+
+    // balas enemigas
+    ctx.globalCompositeOperation = "lighter";
+    for (var eb = 0; eb < W.ebullets.length; eb++) {
+      var b = W.ebullets[eb];
+      ctx.fillStyle = b.color;
+      ctx.shadowColor = b.color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, NX.TAU);
+      ctx.fill();
+    }
+    // balas del jugador
+    ctx.fillStyle = "#fff";
+    ctx.shadowColor = "#19e6ff";
+    ctx.shadowBlur = 12;
+    for (var pb = 0; pb < W.pbullets.length; pb++) {
+      var pbl = W.pbullets[pb];
+      ctx.beginPath();
+      ctx.arc(pbl.x, pbl.y, pbl.r, 0, NX.TAU);
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    ctx.globalCompositeOperation = "source-over";
+
+    // enemigos
+    for (var ei = 0; ei < W.enemies.length; ei++) drawEnemy(ctx, W.enemies[ei], t);
+
+    // jugador
+    if (p && p.alive) {
+      // estela
+      for (var tr = p.trail.length - 1; tr > 0; tr--) {
+        var a = 1 - tr / p.trail.length;
+        ctx.globalAlpha = a * 0.3;
+        ctx.fillStyle = p.dashT > 0 ? "#19e6ff" : "#ff2bd6";
+        ctx.beginPath();
+        ctx.arc(p.trail[tr].x, p.trail[tr].y, p.radius * a * 0.8, 0, NX.TAU);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      var blink = p.invuln > 0 && Math.floor(p.invuln * 14) % 2 === 0;
+      if (!blink) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle + Math.PI / 2);
+        neonStroke(ctx, "#19e6ff", 2.5, 16);
+        ctx.beginPath();
+        ctx.moveTo(0, -p.radius * 1.5);
+        ctx.lineTo(p.radius, p.radius * 1.1);
+        ctx.lineTo(0, p.radius * 0.5);
+        ctx.lineTo(-p.radius, p.radius * 1.1);
+        ctx.closePath();
+        ctx.stroke();
+        // cabina
+        ctx.fillStyle = "#ff2bd6";
+        ctx.shadowColor = "#ff2bd6";
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(0, -p.radius * 0.2, p.radius * 0.32, 0, NX.TAU);
+        ctx.fill();
+        // motor
+        ctx.fillStyle = "#ffd319";
+        ctx.shadowColor = "#ffd319";
+        ctx.globalAlpha = 0.6 + 0.4 * Math.sin(t * 30);
+        ctx.beginPath();
+        ctx.arc(0, p.radius * 0.95, p.radius * 0.3, 0, NX.TAU);
+        ctx.fill();
+        ctx.restore();
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+      }
+
+      // escudo
+      if (p.shield > 0) {
+        ctx.globalAlpha = 0.5 + 0.3 * Math.sin(t * 8);
+        neonStroke(ctx, "#2bff88", 2, 14);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius * 2, 0, NX.TAU);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+      }
+    }
+  }
+
+  return {
+    resetWorld: resetWorld,
+    clearHostiles: clearHostiles,
+    spawnEdge: spawnEdge,
+    queueSpawn: queueSpawn,
+    materialize: materialize,
+    dropPowerup: dropPowerup,
+    update: update,
+    draw: draw,
+    scale: S
+  };
+})();
+
+/* ===== js/levels.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — levels.js
+   Diseño de niveles: 5 sectores, oleadas con ritmo de arcade.
+   Curva pensada en mesa: enseñar → mezclar → presionar → jefe.
+   ============================================================ */
+"use strict";
+
+NX.levels = (function () {
+
+  /* Una oleada es una lista de [tipo, cantidad].                 */
+  var SECTORS = [
+    {
+      name: "SECTOR 1 // ARRABAL NEÓN",
+      song: "sector0",
+      waves: [
+        [["drone", 5]],
+        [["drone", 6], ["spinner", 2]],
+        [["drone", 7], ["spinner", 3], ["splitter", 1]]
+      ]
+    },
+    {
+      name: "SECTOR 2 // MERCADO DE DATOS",
+      song: "sector1",
+      waves: [
+        [["drone", 5], ["turret", 1]],
+        [["spinner", 4], ["splitter", 2]],
+        [["drone", 7], ["turret", 2], ["spinner", 2]],
+        [["splitter", 3], ["drone", 6], ["turret", 1]]
+      ]
+    },
+    {
+      name: "SECTOR 3 // CLOACAS CROMADAS",
+      song: "sector2",
+      waves: [
+        [["wraith", 2], ["drone", 4]],
+        [["splitter", 3], ["wraith", 2]],
+        [["spinner", 3], ["wraith", 3], ["turret", 1]],
+        [["drone", 8], ["wraith", 3], ["splitter", 2]]
+      ]
+    },
+    {
+      name: "SECTOR 4 // TORRE HELIOS",
+      song: "sector3",
+      waves: [
+        [["tank", 1], ["drone", 5]],
+        [["tank", 2], ["spinner", 3]],
+        [["wraith", 3], ["tank", 1], ["turret", 2]],
+        [["tank", 2], ["splitter", 3], ["spinner", 3], ["drone", 4]]
+      ]
+    },
+    {
+      name: "SECTOR 5 // NÚCLEO M.A.D.R.E.",
+      song: "sector4",
+      waves: [
+        [["wraith", 2], ["tank", 1], ["spinner", 3]],
+        [["drone", 6], ["tank", 2], ["wraith", 2], ["turret", 2]]
+      ],
+      boss: true
+    }
+  ];
+
+  var sector = 0;
+  var waveIdx = 0;
+  var spawnList = [];      // tipos pendientes de soltar en la oleada actual
+  var spawnT = 0;
+  var state = "idle";      // idle | spawning | fighting | boss | done
+  var MAX_ALIVE = 13;      // tope de enemigos simultáneos (QA: legibilidad y fps)
+
+  function buildSpawnList(waveDef) {
+    var list = [];
+    for (var i = 0; i < waveDef.length; i++) {
+      for (var k = 0; k < waveDef[i][1]; k++) list.push(waveDef[i][0]);
+    }
+    // barajar para que las mezclas entren intercaladas
+    for (var j = list.length - 1; j > 0; j--) {
+      var r = (Math.random() * (j + 1)) | 0;
+      var tmp = list[j]; list[j] = list[r]; list[r] = tmp;
+    }
+    return list;
+  }
+
+  function start(idx) {
+    sector = idx;
+    waveIdx = -1;
+    state = "spawning";
+    nextWave();
+  }
+
+  function nextWave() {
+    waveIdx++;
+    var sec = SECTORS[sector];
+    if (waveIdx >= sec.waves.length) {
+      if (sec.boss) {
+        state = "boss";
+        NX.game.onBossStart();
+      } else {
+        state = "done";
+        NX.game.onSectorCleared();
+      }
+      return;
+    }
+    spawnList = buildSpawnList(sec.waves[waveIdx]);
+    spawnT = 0.6;
+    state = "spawning";
+    NX.game.onWaveStart(waveIdx + 1, sec.waves.length);
+  }
+
+  function update(dt, w, h) {
+    if (state === "idle" || state === "done") return;
+    var alive = NX.world.enemies.length + NX.world.portals.length;
+
+    if (state === "spawning") {
+      spawnT -= dt;
+      if (spawnT <= 0 && spawnList.length > 0 && alive < MAX_ALIVE) {
+        spawnT = NX.rand(0.4, 0.8);
+        NX.entities.spawnEdge(spawnList.pop(), w, h);
+      }
+      if (spawnList.length === 0) state = "fighting";
+    } else if (state === "fighting") {
+      if (alive === 0) nextWave();
+    } else if (state === "boss") {
+      // main.js gestiona la materialización y la muerte del jefe
+    }
+  }
+
+  function bossDefeated() { state = "done"; }
+
+  return {
+    SECTORS: SECTORS,
+    start: start,
+    update: update,
+    bossDefeated: bossDefeated,
+    current: function () { return SECTORS[sector]; },
+    sectorIndex: function () { return sector; },
+    waveNumber: function () { return waveIdx + 1; },
+    waveTotal: function () { return SECTORS[sector].waves.length; },
+    isBossPhase: function () { return state === "boss"; },
+    count: SECTORS.length
+  };
+})();
+
+/* ===== js/ui.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — ui.js
+   UX/UI: gestión de pantallas DOM, secuencia de arranque,
+   terminal narrativo con efecto máquina de escribir, HUD
+   y menús. El texto vive en el DOM para que se lea nítido
+   en pantallas retina (decisión de UX).
+   ============================================================ */
+"use strict";
+
+NX.ui = (function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  var screens = ["screen-boot", "screen-title", "screen-howto", "screen-options",
+    "screen-credits", "screen-story", "screen-pause", "screen-gameover", "screen-victory"];
+
+  function show(id) {
+    for (var i = 0; i < screens.length; i++) {
+      $(screens[i]).classList.toggle("hidden", screens[i] !== id);
+    }
+  }
+  function hideAll() { show("__none__"); }
+
+  function showHud(on) { $("hud").classList.toggle("hidden", !on); }
+
+  /* ---------- Secuencia de arranque ---------- */
+  function bootSequence(onDone) {
+    show("screen-boot");
+    var el = $("boot-text");
+    el.textContent = "";
+    var lines = NX.story.boot;
+    var li = 0, done = false;
+
+    function nextLine() {
+      if (li >= lines.length) { done = true; return; }
+      el.textContent += lines[li] + "\n";
+      li++;
+      setTimeout(nextLine, li >= lines.length - 1 ? 400 : NX.rand(120, 380));
+    }
+    nextLine();
+
+    function go() {
+      $("screen-boot").removeEventListener("pointerdown", go);
+      window.removeEventListener("keydown", goKey);
+      onDone();
+    }
+    function goKey(e) { if (!e.repeat) go(); }
+    $("screen-boot").addEventListener("pointerdown", go);
+    window.addEventListener("keydown", goKey);
+  }
+
+  /* ---------- Terminal narrativo ---------- */
+  var dlg = { lines: null, idx: 0, charIdx: 0, timer: null, onDone: null, typing: false };
+
+  function playDialogue(lines, onDone) {
+    dlg.lines = lines;
+    dlg.idx = 0;
+    dlg.onDone = onDone;
+    show("screen-story");
+    typeLine();
+  }
+
+  function typeLine() {
+    var line = dlg.lines[dlg.idx];
+    $("story-speaker").textContent = "» " + line.who;
+    $("story-speaker").style.color = line.color;
+    $("story-text").textContent = "";
+    dlg.charIdx = 0;
+    dlg.typing = true;
+    clearInterval(dlg.timer);
+    dlg.timer = setInterval(function () {
+      dlg.charIdx += 1;
+      $("story-text").textContent = line.text.slice(0, dlg.charIdx);
+      if (dlg.charIdx % 3 === 0) NX.audio.sfx.typeTick();
+      if (dlg.charIdx >= line.text.length) {
+        clearInterval(dlg.timer);
+        dlg.typing = false;
+      }
+    }, 24);
+  }
+
+  function advanceDialogue() {
+    if (!dlg.lines) return;
+    if (dlg.typing) {
+      // primer toque: completa la línea (regla sagrada de UX)
+      clearInterval(dlg.timer);
+      $("story-text").textContent = dlg.lines[dlg.idx].text;
+      dlg.typing = false;
+      return;
+    }
+    dlg.idx++;
+    NX.audio.sfx.ui();
+    if (dlg.idx >= dlg.lines.length) {
+      var cb = dlg.onDone;
+      dlg.lines = null;
+      hideAll();
+      if (cb) cb();
+    } else {
+      typeLine();
+    }
+  }
+
+  /* ---------- HUD ---------- */
+  function pad6(n) { n = Math.floor(n); var s = "" + n; while (s.length < 6) s = "0" + s; return s; }
+
+  function setScore(v) { $("hud-score").textContent = pad6(v); }
+  function setCombo(mult, kills) {
+    $("hud-combo").textContent = mult > 1 ? ("COMBO ×" + mult) : "";
+  }
+  function setSector(name) { $("hud-sector").textContent = name; }
+  function setWave(txt) { $("hud-wave").textContent = txt; }
+  function setHP(frac) {
+    var f = $("hud-hp-fill");
+    f.style.width = (NX.clamp(frac, 0, 1) * 100) + "%";
+    f.style.background = frac < 0.3
+      ? "linear-gradient(90deg,#ff3b3b,#ff7a18)"
+      : "linear-gradient(90deg,#19e6ff,#2bff88)";
+  }
+  function setPower(txt, color) {
+    var el = $("hud-power");
+    el.textContent = txt || "";
+    if (color) el.style.color = color;
+  }
+  function showBoss(on) { $("boss-bar").classList.toggle("hidden", !on); }
+  function setBossHp(frac) { $("boss-hp-fill").style.width = (NX.clamp(frac, 0, 1) * 100) + "%"; }
+
+  /* ---------- Título / fin ---------- */
+  function setHiscore(v) {
+    $("title-hiscore").textContent = v > 0 ? ("RÉCORD  " + pad6(v)) : "SIN RÉCORD — ESCRIBE LA HISTORIA";
+  }
+
+  function showGameOver(score, isRecord) {
+    $("go-score").textContent = pad6(score);
+    $("go-flavor").textContent = NX.pick(NX.story.gameOverLines);
+    $("go-record").classList.toggle("hidden", !isRecord);
+    show("screen-gameover");
+  }
+
+  function showVictory(score, isRecord) {
+    $("v-score").textContent = pad6(score);
+    $("v-record").classList.toggle("hidden", !isRecord);
+    show("screen-victory");
+  }
+
+  /* ---------- Créditos ---------- */
+  function buildCredits() {
+    var box = $("credits-body");
+    box.innerHTML = "";
+    NX.story.credits.forEach(function (c) {
+      var d = document.createElement("div");
+      d.className = "credit";
+      var role = document.createElement("div"); role.className = "role"; role.textContent = c.role;
+      var name = document.createElement("div"); name.className = "name"; name.textContent = c.name;
+      var note = document.createElement("div"); note.className = "note"; note.textContent = c.note;
+      d.appendChild(role); d.appendChild(name); d.appendChild(note);
+      box.appendChild(d);
+    });
+  }
+
+  /* ---------- Opciones ---------- */
+  function refreshOptions(s) {
+    $("o-music").textContent = "MÚSICA: " + (s.music ? "SÍ" : "NO");
+    $("o-sfx").textContent = "EFECTOS: " + (s.sfx ? "SÍ" : "NO");
+    $("o-crt").textContent = "FILTRO CRT: " + (s.crt ? "SÍ" : "NO");
+    $("o-shake").textContent = "VIBRACIÓN PANTALLA: " + (s.shake ? "SÍ" : "NO");
+    document.body.classList.toggle("no-crt", !s.crt);
+  }
+
+  /* ---------- Enlaces de botones ---------- */
+  function bind() {
+    buildCredits();
+
+    function on(id, fn) {
+      $(id).addEventListener("click", function (e) {
+        e.preventDefault();
+        NX.audio.unlock();
+        NX.audio.sfx.ui();
+        fn();
+      });
+    }
+
+    on("m-start", function () { NX.game.newRun(); });
+    on("m-howto", function () { show("screen-howto"); });
+    on("m-options", function () { show("screen-options"); });
+    on("m-credits", function () { show("screen-credits"); });
+
+    var backs = document.querySelectorAll("[data-back]");
+    for (var i = 0; i < backs.length; i++) {
+      backs[i].addEventListener("click", function (e) {
+        e.preventDefault();
+        NX.audio.sfx.ui();
+        NX.game.backToMenuScreen();
+      });
+    }
+
+    on("o-music", function () { NX.game.toggleSetting("music"); });
+    on("o-sfx", function () { NX.game.toggleSetting("sfx"); });
+    on("o-crt", function () { NX.game.toggleSetting("crt"); });
+    on("o-shake", function () { NX.game.toggleSetting("shake"); });
+    on("o-wipe", function () { NX.game.wipeRecords(); });
+
+    on("btn-pause", function () { NX.game.togglePause(); });
+    on("p-resume", function () { NX.game.togglePause(); });
+    on("p-restart", function () { NX.game.retrySector(); });
+    on("p-quit", function () { NX.game.quitToTitle(); });
+
+    on("go-retry", function () { NX.game.retrySector(); });
+    on("go-title", function () { NX.game.quitToTitle(); });
+    on("v-credits", function () { show("screen-credits"); });
+    on("v-title", function () { NX.game.quitToTitle(); });
+
+    $("screen-story").addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      advanceDialogue();
+    });
+    window.addEventListener("keydown", function (e) {
+      if (!e.repeat && (e.code === "Enter" || e.code === "Space")) {
+        if (dlg.lines) advanceDialogue();
+      }
+    });
+  }
+
+  return {
+    show: show, hideAll: hideAll, showHud: showHud,
+    bootSequence: bootSequence,
+    playDialogue: playDialogue,
+    setScore: setScore, setCombo: setCombo, setSector: setSector, setWave: setWave,
+    setHP: setHP, setPower: setPower, showBoss: showBoss, setBossHp: setBossHp,
+    setHiscore: setHiscore, showGameOver: showGameOver, showVictory: showVictory,
+    refreshOptions: refreshOptions,
+    bind: bind,
+    inDialogue: function () { return !!dlg.lines; }
+  };
+})();
+
+/* ===== js/main.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — main.js
+   Núcleo: bucle de juego, máquina de estados, puntuación,
+   combos, guardado local y coordinación de todos los módulos.
+   ============================================================ */
+"use strict";
+
+NX.game = (function () {
+  var canvas, ctx;
+  var W = 0, H = 0, DPR = 1;
+
+  var state = "boot";   // boot | title | story | play | pause | gameover | victory
+  var time = 0;
+  var lastFrame = 0;
+
+  var settings = { music: true, sfx: true, crt: true, shake: true };
+  var hiscore = 0;
+
+  var score = 0, sectorStartScore = 0;
+  var comboKills = 0, comboT = 0, mult = 1;
+  var sectorIdx = 0;
+  var boss = null;
+  var runToken = 0;     // invalida timeouts pendientes al reiniciar/salir
+  var menuReturn = "title";
+
+  /* ---------- Guardado ---------- */
+  function load() {
+    try {
+      var raw = localStorage.getItem(NX.SAVE_KEY);
+      if (raw) {
+        var d = JSON.parse(raw);
+        hiscore = d.hiscore || 0;
+        if (d.settings) settings = Object.assign(settings, d.settings);
+      }
+    } catch (e) { /* almacenamiento bloqueado: jugamos sin guardar */ }
+  }
+  function save() {
+    try {
+      localStorage.setItem(NX.SAVE_KEY, JSON.stringify({ hiscore: hiscore, settings: settings }));
+    } catch (e) { /* sin persistencia */ }
+  }
+
+  function applySettings() {
+    NX.audio.setMusic(settings.music);
+    NX.audio.setSfx(settings.sfx);
+    NX.fx.setShake(settings.shake);
+    NX.ui.refreshOptions(settings);
+  }
+
+  /* ---------- Lienzo ---------- */
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    DPR = Math.min(window.devicePixelRatio || 1, NX.MAX_DPR);
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    NX.fx.onResize();
+  }
+
+  /* ---------- Temporizador con token ---------- */
+  function later(ms, fn) {
+    var tk = runToken;
+    setTimeout(function () { if (tk === runToken) fn(); }, ms);
+  }
+
+  /* ---------- Flujo de partida ---------- */
+  function goTitle() {
+    runToken++;
+    state = "title";
+    menuReturn = "title";
+    boss = null;
+    NX.ui.showHud(false);
+    NX.ui.showBoss(false);
+    NX.ui.setHiscore(hiscore);
+    NX.ui.show("screen-title");
+    NX.fx.reset();
+    NX.audio.playSong("title");
+  }
+
+  function newRun() {
+    runToken++;
+    score = 0; sectorStartScore = 0;
+    comboKills = 0; comboT = 0; mult = 1;
+    sectorIdx = 0;
+    state = "story";
+    NX.ui.showHud(false);
+    NX.audio.stopMusic();
+    var lines = NX.story.intro.concat(NX.story.sectorIntro[0]);
+    NX.ui.playDialogue(lines, function () { startSector(0); });
+  }
+
+  function startSector(idx) {
+    runToken++;
+    sectorIdx = idx;
+    sectorStartScore = score;
+    boss = null;
+    comboKills = 0; comboT = 0; mult = 1;
+    NX.fx.reset();
+    NX.entities.resetWorld(W, H);
+    NX.levels.start(idx);
+    NX.ui.hideAll();
+    NX.ui.showHud(true);
+    NX.ui.showBoss(false);
+    NX.ui.setSector(NX.levels.current().name);
+    NX.ui.setScore(score);
+    NX.ui.setCombo(1, 0);
+    NX.ui.setHP(1);
+    NX.audio.playSong(NX.levels.current().song);
+    state = "play";
+  }
+
+  function nextSector() {
+    var nxt = sectorIdx + 1;
+    state = "story";
+    NX.ui.showHud(false);
+    var lines = NX.story.sectorOutro[sectorIdx].concat(NX.story.sectorIntro[nxt]);
+    NX.ui.playDialogue(lines, function () { startSector(nxt); });
+  }
+
+  function retrySector() {
+    score = sectorStartScore;
+    startSector(sectorIdx);
+  }
+
+  function quitToTitle() {
+    goTitle();
+  }
+
+  function togglePause() {
+    if (state === "play") {
+      state = "pause";
+      menuReturn = "pause";
+      NX.audio.duck();
+      NX.ui.show("screen-pause");
+    } else if (state === "pause") {
+      state = "play";
+      menuReturn = "title";
+      NX.ui.hideAll();
+    }
+  }
+
+  function backToMenuScreen() {
+    if (menuReturn === "pause" && state === "pause") NX.ui.show("screen-pause");
+    else if (menuReturn === "victory") NX.ui.show("screen-victory");
+    else NX.ui.show("screen-title");
+  }
+
+  /* ---------- Puntuación y combo ---------- */
+  function addScore(points, x, y) {
+    var total = points * mult;
+    score += total;
+    NX.ui.setScore(score);
+    if (x !== undefined) {
+      NX.fx.textPop(x, y, "+" + total, mult > 1 ? "#ff2bd6" : "#ffd319", mult >= 4);
+    }
+  }
+
+  function bumpCombo() {
+    comboKills++;
+    comboT = NX.COMBO_WINDOW;
+    var newMult = Math.min(NX.COMBO_MAX, 1 + Math.floor(comboKills / NX.COMBO_STEP));
+    if (newMult !== mult) {
+      mult = newMult;
+      if (mult > 1) {
+        NX.fx.textPop(W * 0.5, H * 0.3, "COMBO ×" + mult, "#ff2bd6", true);
+        NX.audio.sfx.pickup();
+      }
+    }
+    NX.ui.setCombo(mult, comboKills);
+  }
+
+  /* ---------- Callbacks del mundo ---------- */
+  var api = {
+    onEnemyKilled: function (e) {
+      bumpCombo();
+      addScore(e.score, e.x, e.y);
+    },
+    onGraze: function () {
+      addScore(5);
+    },
+    onPlayerHurt: function () {
+      comboKills = 0; comboT = 0;
+      if (mult > 1) NX.fx.textPop(W * 0.5, H * 0.34, "COMBO PERDIDO", "#ff3b3b", false);
+      mult = 1;
+      NX.ui.setCombo(1, 0);
+    },
+    onPlayerDeath: function () {
+      NX.ui.showBoss(false);
+      NX.audio.stopMusic();
+      NX.audio.sfx.gameover();
+      var isRecord = score > hiscore;
+      if (isRecord) { hiscore = score; save(); }
+      later(1700, function () {
+        state = "gameover";
+        NX.ui.showHud(false);
+        NX.ui.showGameOver(score, isRecord);
+      });
+    },
+    onPowerup: function (type) {
+      addScore(25);
+    },
+    onWaveStart: function (n, total) {
+      NX.ui.setWave("OLEADA " + n + " / " + total);
+      NX.fx.textPop(W * 0.5, H * 0.26, "OLEADA " + n, "#19e6ff", true);
+    },
+    onSectorCleared: function () {
+      addScore(500);
+      NX.fx.textPop(W * 0.5, H * 0.3, "SECTOR LIBERADO +500", "#2bff88", true);
+      NX.audio.sfx.fanfare();
+      later(1400, nextSector);
+    },
+    onBossStart: function () {
+      state = "story";
+      NX.ui.showHud(false);
+      NX.audio.duck();
+      NX.ui.playDialogue(NX.story.bossIntro, function () {
+        state = "play";
+        NX.ui.showHud(true);
+        NX.audio.playSong("boss");
+        NX.audio.sfx.bossRoar();
+        boss = NX.entities.materialize("boss", W * 0.5, H * 0.22);
+        NX.ui.showBoss(true);
+        NX.ui.setBossHp(1);
+        NX.ui.setWave("PROTOCOLO DE DEFENSA TOTAL");
+        NX.fx.shake(10, 0.8);
+        NX.fx.flash("#8a2bff", 0.4);
+      });
+    },
+    onBossHp: function (frac) { NX.ui.setBossHp(frac); },
+    onBossPhase: function (phase) {
+      NX.fx.textPop(W * 0.5, H * 0.3, phase === 1 ? "MADRE: «INSOLENTE.»" : "MADRE: «¡¡BASTA!!»", "#ff3b3b", true);
+    },
+    onBossDefeated: function (e) {
+      NX.levels.bossDefeated();
+      boss = null;
+      addScore(NX.ENEMIES.boss.score, e.x, e.y);
+      NX.ui.showBoss(false);
+      NX.entities.clearHostiles();
+      NX.audio.stopMusic();
+      NX.audio.sfx.bigExplode();
+      NX.fx.flash("#ffffff", 0.85);
+      NX.fx.shake(18, 1.0);
+      var isRecord = score > hiscore;
+      if (isRecord) { hiscore = score; save(); }
+      later(2000, function () {
+        state = "story";
+        NX.ui.showHud(false);
+        NX.audio.playSong("ending");
+        NX.ui.playDialogue(NX.story.ending, function () {
+          state = "victory";
+          menuReturn = "victory";
+          NX.audio.sfx.fanfare();
+          NX.ui.showVictory(score, isRecord);
+        });
+      });
+    },
+    isRunning: function () { return state === "play"; }
+  };
+
+  /* ---------- Ajustes ---------- */
+  function toggleSetting(key) {
+    settings[key] = !settings[key];
+    save();
+    applySettings();
+  }
+  function wipeRecords() {
+    hiscore = 0;
+    save();
+    NX.ui.setHiscore(0);
+    NX.audio.sfx.hurt();
+  }
+
+  /* ---------- Bucle principal ---------- */
+  function frame(ts) {
+    requestAnimationFrame(frame);
+    if (!lastFrame) lastFrame = ts;
+    var dt = Math.min((ts - lastFrame) / 1000, 0.033);
+    lastFrame = ts;
+    time += dt;
+
+    var palIdx = (state === "play" || state === "pause" || state === "gameover") ? sectorIdx : 0;
+    var pal = NX.PALETTES[NX.clamp(palIdx, 0, NX.PALETTES.length - 1)];
+
+    if (state === "play") {
+      NX.levels.update(dt, W, H);
+      NX.entities.update(dt, W, H);
+      NX.fx.update(dt);
+
+      if (comboT > 0) {
+        comboT -= dt;
+        if (comboT <= 0 && comboKills > 0) {
+          comboKills = 0; mult = 1;
+          NX.ui.setCombo(1, 0);
+        }
+      }
+
+      var p = NX.world.player;
+      if (p) {
+        NX.ui.setHP(p.hp / NX.PLAYER.hpMax);
+        var fxs = [];
+        if (p.power) fxs.push(NX.POWERUPS[p.power].label + " " + Math.ceil(p.powerT));
+        if (p.shield > 0) fxs.push("ESCUDO " + Math.ceil(p.shield));
+        if (p.slowmoT > 0) fxs.push("T-BALA " + Math.ceil(p.slowmoT));
+        NX.ui.setPower(fxs.join("  "), p.power ? NX.POWERUPS[p.power].color : "#2bff88");
+      }
+    } else if (state === "title" || state === "victory" || state === "story") {
+      NX.fx.update(dt);
+    }
+
+    /* --- render --- */
+    var shake = NX.fx.getShake();
+    ctx.save();
+    ctx.translate(shake.x, shake.y);
+
+    var intensity = state === "play" ? Math.min(1, mult / 4) : 0.3;
+    NX.fx.drawBackground(ctx, W, H, dt, time, pal, intensity, palIdx);
+
+    if (state === "play" || state === "pause" || state === "gameover") {
+      NX.entities.draw(ctx, time);
+      NX.fx.draw(ctx);
+      if (state === "play") NX.fx.drawSticks(ctx);
+    } else {
+      NX.fx.draw(ctx);
+    }
+
+    ctx.restore();
+    NX.fx.drawFlash(ctx, W, H);
+  }
+
+  /* ---------- Arranque ---------- */
+  function init() {
+    canvas = document.getElementById("game");
+    ctx = canvas.getContext("2d");
+    load();
+    applySettings();
+    resize();
+    window.addEventListener("resize", resize);
+    window.addEventListener("orientationchange", function () { setTimeout(resize, 300); });
+
+    NX.input.init(canvas);
+    NX.ui.bind();
+
+    // autopausa al perder el foco (regla de QA: nunca mueras en segundo plano)
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden && state === "play") togglePause();
+    });
+
+    // primer gesto: desbloquear audio en iOS
+    var unlockOnce = function () {
+      NX.audio.unlock();
+      document.removeEventListener("pointerdown", unlockOnce);
+      document.removeEventListener("keydown", unlockOnce);
+    };
+    document.addEventListener("pointerdown", unlockOnce);
+    document.addEventListener("keydown", unlockOnce);
+
+    NX.ui.bootSequence(function () {
+      NX.audio.unlock();
+      goTitle();
+    });
+
+    requestAnimationFrame(frame);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  /* API pública */
+  api.newRun = newRun;
+  api.retrySector = retrySector;
+  api.quitToTitle = quitToTitle;
+  api.togglePause = togglePause;
+  api.backToMenuScreen = backToMenuScreen;
+  api.toggleSetting = toggleSetting;
+  api.wipeRecords = wipeRecords;
+  return api;
+})();
+
+</script>
+</body>
+</html>

@@ -14,20 +14,28 @@ castellano. Sin dependencias, sin instalación: HTML5 puro.
 
 ## 🎮 Cómo jugar en tu iPhone
 
-**Opción A — URL directa (recomendada).** Si GitHub Pages está activo, abre en Safari:
+**Opción A — URL directa (un paso manual).** El repo incluye un workflow de
+despliegue, pero GitHub no permite que el propio workflow *active* Pages: hay
+que hacerlo una vez a mano. En GitHub → **Settings → Pages → Source: GitHub
+Actions** y relanza el workflow «Desplegar NEON EXODUS» en la pestaña Actions.
+Después, abre en Safari:
 
 ```
 https://ruben-arconada.github.io/linklub/
 ```
 
-> El despliegue es automático (workflow incluido). Si la URL no responde aún:
-> en GitHub → **Settings → Pages → Source: GitHub Actions**, y vuelve a lanzar
-> el workflow «Desplegar NEON EXODUS» desde la pestaña Actions.
+> ⚠️ Este repo es **privado**: GitHub Pages en repos privados requiere plan
+> Pro. Con plan gratuito, haz el repo público (o solo esta rama en otro repo)
+> y la URL funcionará igual.
 
 Consejo: en Safari toca **Compartir → Añadir a pantalla de inicio** y se
 ejecutará a pantalla completa, como una app nativa. Juega con sonido. 🎧
 
-**Opción B — local.** Clona el repo y sirve la carpeta con cualquier estático
+**Opción B — un solo archivo.** [`neon-exodus-2087.html`](neon-exodus-2087.html)
+contiene el juego completo (104 KB, sin conexión): descárgalo y ábrelo con
+doble clic en cualquier navegador de escritorio.
+
+**Opción C — local.** Clona el repo y sirve la carpeta con cualquier estático
 (`npx http-server`, `python3 -m http.server`…). También funciona abriendo
 `index.html` a pelo.
 
