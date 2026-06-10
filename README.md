@@ -21,7 +21,7 @@ Actions** y relanza el workflow «Desplegar NEON EXODUS» en la pestaña Actions
 Después, abre en Safari:
 
 ```
-https://ruben-arconada.github.io/linklub/
+https://ruben-arconada.github.io/Linklub/
 ```
 
 > ⚠️ Este repo es **privado**: GitHub Pages en repos privados requiere plan
