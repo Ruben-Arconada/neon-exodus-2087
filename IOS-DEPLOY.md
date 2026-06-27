@@ -17,8 +17,8 @@ marcados con 🍏 **solo se pueden hacer en un Mac con Xcode**.
 ## 1. En el Mac: clonar y preparar (terminal)
 
 ```bash
-git clone https://github.com/Ruben-Arconada/Linklub.git
-cd Linklub
+git clone https://github.com/Ruben-Arconada/neon-exodus-2087.git
+cd neon-exodus-2087
 git checkout claude/fable5-80s-cyberpunk-game-qn7iro
 
 npm install                 # instala Capacitor

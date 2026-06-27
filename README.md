@@ -14,19 +14,12 @@ castellano. Sin dependencias, sin instalación: HTML5 puro.
 
 ## 🎮 Cómo jugar en tu iPhone
 
-**Opción A — URL directa (un paso manual).** El repo incluye un workflow de
-despliegue, pero GitHub no permite que el propio workflow *active* Pages: hay
-que hacerlo una vez a mano. En GitHub → **Settings → Pages → Source: GitHub
-Actions** y relanza el workflow «Desplegar NEON EXODUS» en la pestaña Actions.
-Después, abre en Safari:
+**Opción A — URL directa (recomendada).** Ya está desplegado en GitHub Pages.
+Abre en Safari:
 
 ```
-https://ruben-arconada.github.io/Linklub/
+https://ruben-arconada.github.io/neon-exodus-2087/
 ```
-
-> ⚠️ Este repo es **privado**: GitHub Pages en repos privados requiere plan
-> Pro. Con plan gratuito, haz el repo público (o solo esta rama en otro repo)
-> y la URL funcionará igual.
 
 Consejo: en Safari toca **Compartir → Añadir a pantalla de inicio** y se
 ejecutará a pantalla completa, como una app nativa. Juega con sonido. 🎧
