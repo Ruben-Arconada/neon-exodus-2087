@@ -78,9 +78,14 @@ Rellena la ficha:
 - **Descripción:** usa la del bloque de abajo 👇
 - **Palabras clave:** `synthwave,arcade,retro,cyberpunk,shooter,neon,80s,naves`
 - **Categoría:** Juegos → Primaria: *Arcade*, Secundaria: *Acción*.
-- **Capturas (obligatorias):** necesitas las de 6,9" (iPhone 16 Pro Max,
-  1320×2868) **y** 6,5". Genera nuevas desde tu iPhone (botón lateral + subir
-  volumen) o pídeme que te las renderice a esas resoluciones exactas.
+- **Capturas (obligatorias):** ✅ **ya generadas** en el repo, en
+  `resources/screenshots/`. Apple (2025-2026) solo exige **un set de 6,9"**
+  (1320×2868 px) y reescala solo al resto de iPhones. Sube las 5 de
+  `resources/screenshots/6.9/` (título, combate, jefe, historia, victoria).
+  También dejé el set de 6,5" (1242×2688) por si lo prefieres. Reglas: PNG/JPG
+  RGB, **sin transparencia ni esquinas redondeadas**, 1 a 10 por tamaño. Para
+  regenerarlas: `npm run build` y `node scripts/shots.js 440 956 3 resources/screenshots/6.9`
+  (con el juego servido en `http://127.0.0.1:8090`).
 - **Clasificación por edad:** responde el cuestionario; este juego es
   violencia de dibujos/fantasía leve → suele quedar **9+** o **12+**.
 - **Política de privacidad:** Apple exige una URL. El juego **no recoge datos**
@@ -104,14 +109,73 @@ luego seleccionable en la versión). Asígnalo a la versión 1.0 y pulsa
 
 ## 6. Revisión de Apple (24–48 h normalmente)
 - El mayor riesgo es la directriz **4.2 (Minimum Functionality)**: Apple
-  rechaza apps que sean "solo una web". Mitigaciones ya incluidas: funciona
-  100 % **offline**, vibración **háptica nativa** (`js/native.js`), pausa al
-  ir a segundo plano y splash nativo. Si aun así lo rechazan, la respuesta
-  habitual que funciona es añadir **Game Center** (marcadores) — pídemelo y lo
-  integro.
-- En las notas para el revisor escribe: *"Juego de acción arcade nativo
-  basado en HTML5 Canvas, funciona sin conexión, sin cuentas ni recogida de
-  datos."*
+  rechaza apps que sean "solo una web". Mitigaciones **ya incluidas** en el
+  juego: funciona 100 % **offline** (todo el contenido va en el bundle, nada
+  se carga desde una URL remota — éste es el disparador nº1 de rechazo),
+  vibración **háptica nativa** (`js/native.js`), pausa al ir a segundo plano,
+  splash nativo y diseño app-like (icono, safe-area, controles táctiles).
+- **Notas para el revisor (pégalas en "Notes for Review", en inglés):**
+
+```
+App Review Team:
+
+This is a native arcade game (twin-stick shooter) built with an HTML5 Canvas
+engine and packaged with Capacitor. It is NOT a repackaged website or a web
+clipping, and it does NOT load any remote web content.
+
+ALL game assets (code, art, audio, levels, music) are bundled inside the app.
+The game is fully playable OFFLINE — no internet connection is required at any
+point. You can verify this by launching the app in Airplane Mode.
+
+The game offers genuine, lasting entertainment: 5 sectors, 8 enemy types, a
+3-phase final boss, a combo system, power-ups and local high scores. There is
+no browser UI, address bar or web navigation anywhere.
+
+Native device integrations not available in Safari:
+- Core Haptics: tactile feedback on hits, explosions and pickups.
+- Offline local persistence of high scores and settings.
+
+Thank you for reviewing.
+```
+
+- Si **pese a todo** lo rechazan por 4.2, el refuerzo más potente es añadir
+  **Game Center** (marcadores online). Ver la sección 7. Corrige antes de
+  apelar: la mayoría de apelaciones se deniegan si la app realmente infringe.
+
+---
+
+## 7. (OPCIONAL) Game Center — solo si te rechazan por 4.2
+
+> ⚠️ **Realidad verificada (jun 2026):** los plugins de Game Center para
+> Capacitor van por detrás. `@openforge/capacitor-game-connect` (5.0.2) declara
+> peer de **Capacitor 5**, y `@openforge/capacitor-game-services` (1.1.2) de
+> **Capacitor 4**. Este proyecto usa **Capacitor 6**, así que tienes dos vías:
+
+**Vía A (recomendada, menos fricción):** instalar el plugin forzando la
+resolución de peers y probar en tu Mac:
+```bash
+npm install @openforge/capacitor-game-connect --legacy-peer-deps
+npx cap sync ios
+```
+**Vía B (máxima compatibilidad):** fijar el proyecto a Capacitor 5
+(`npm i @capacitor/core@5 @capacitor/ios@5 @capacitor/cli@5`) y luego instalar
+el plugin. Más estable con el plugin, pero retrocede una versión mayor.
+
+**El cableado JS ya está hecho:** `js/gamecenter.js` detecta el plugin y, si
+está, hace login y envía la puntuación al cerrar partida/victoria
+(leaderboard `com.estudiosietesiete.neonexodus.highscores`). Sin plugin es
+inofensivo (no-op), por eso no rompe nada ahora.
+
+**Pasos nativos (en el Mac):**
+1. Xcode → target *App* → **Signing & Capabilities → + Capability → Game Center**.
+2. App Store Connect → tu app → **Features → Game Center** → actívalo y crea un
+   **Leaderboard** con ID `com.estudiosietesiete.neonexodus.highscores` (o el
+   que prefieras; si lo cambias, ajústalo también en `js/gamecenter.js`).
+3. **Crítico:** los leaderboards deben **enviarse a revisión junto al binario**
+   (añádelos a la versión antes de *Submit*), o el revisor no los verá.
+4. Verifica los nombres exactos de métodos del plugin contra su README (la API
+   puede variar entre versiones); `gamecenter.js` ya contempla las variantes
+   más comunes (`submitScore` / `reportScore`).
 
 ---
 

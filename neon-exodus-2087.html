@@ -2945,6 +2945,144 @@ NX.game = (function () {
   return api;
 })();
 
+/* ===== js/native.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — native.js
+   Puente opcional con Capacitor (solo activo dentro de la app iOS).
+   En web es un no-op total: detecta window.Capacitor y, si existe,
+   añade vibración háptica, oculta el splash y gestiona el ciclo de
+   vida nativo. No toca nada del juego si corre en navegador.
+   Refuerza la "funcionalidad mínima" que exige la guía 4.2 de Apple.
+   ============================================================ */
+"use strict";
+(function () {
+  var Cap = window.Capacitor;
+  if (!Cap || !Cap.isNativePlatform || !Cap.isNativePlatform()) return;
+
+  var Plugins = Cap.Plugins || {};
+  var Haptics = Plugins.Haptics;
+  var SplashScreen = Plugins.SplashScreen;
+  var StatusBar = Plugins.StatusBar;
+  var App = Plugins.App;
+
+  // Oculta la pantalla de carga una vez el juego está listo
+  function hideSplash() { try { SplashScreen && SplashScreen.hide(); } catch (e) {} }
+  if (document.readyState === "complete") setTimeout(hideSplash, 600);
+  else window.addEventListener("load", function () { setTimeout(hideSplash, 600); });
+
+  // Barra de estado en estilo claro sobre fondo oscuro
+  try { StatusBar && StatusBar.setStyle({ style: "DARK" }); } catch (e) {}
+
+  // Pausa el juego cuando la app pasa a segundo plano
+  try {
+    App && App.addListener && App.addListener("appStateChange", function (st) {
+      if (!st.isActive && window.NX && NX.game && NX.game.togglePause) {
+        try { if (NX.game.isRunning && NX.game.isRunning()) NX.game.togglePause(); } catch (e) {}
+      }
+    });
+  } catch (e) {}
+
+  // Háptica: engancha en los SFX existentes sin tocar el motor
+  function hook(obj, name, impact) {
+    if (!obj || !obj[name] || !Haptics) return;
+    var orig = obj[name];
+    obj[name] = function () {
+      try { Haptics.impact({ style: impact }); } catch (e) {}
+      return orig.apply(this, arguments);
+    };
+  }
+  function wire() {
+    if (!window.NX || !NX.audio || !NX.audio.sfx) { setTimeout(wire, 300); return; }
+    var s = NX.audio.sfx;
+    hook(s, "hurt", "HEAVY");
+    hook(s, "bigExplode", "HEAVY");
+    hook(s, "explode", "LIGHT");
+    hook(s, "pickup", "LIGHT");
+    hook(s, "bomb", "HEAVY");
+  }
+  wire();
+})();
+
+/* ===== js/gamecenter.js ===== */
+/* ============================================================
+   NEON EXODUS 2087 — gamecenter.js  (OPCIONAL)
+   Puente con Apple Game Center. Es 100% OPCIONAL y a prueba de
+   fallos: si no hay plugin de Game Center instalado (que es el
+   caso por defecto), NO hace absolutamente nada — ni en web ni en
+   la app. Solo se activa si detecta el plugin en Capacitor.
+
+   Para activarlo de verdad hay que instalar un plugin nativo en el
+   Mac (ver IOS-DEPLOY.md, sección Game Center). Mientras tanto este
+   archivo es inofensivo y deja el cableado listo.
+
+   Engancha en NX.ui.showGameOver / showVictory (que reciben la
+   puntuación) para enviar el marcador, sin tocar el motor del juego.
+   ============================================================ */
+"use strict";
+(function () {
+  var Cap = window.Capacitor;
+  if (!Cap || !Cap.isNativePlatform || !Cap.isNativePlatform()) return;
+
+  var P = Cap.Plugins || {};
+  // Soporta los nombres de plugin más habituales; si ninguno existe, no-op.
+  var GC = P.CapacitorGameConnect || P.GameConnect || P.GameServices || P.CapacitorGameServices || null;
+  if (!GC) return;
+
+  var LEADERBOARD_ID = "com.estudiosietesiete.neonexodus.highscores";
+  var signedIn = false;
+
+  function signIn() {
+    if (signedIn) return Promise.resolve();
+    var fn = GC.signIn || GC.login || GC.authenticate;
+    if (!fn) return Promise.resolve();
+    return Promise.resolve(fn.call(GC, {})).then(function () { signedIn = true; }).catch(function () {});
+  }
+
+  function submit(score) {
+    if (!score || score <= 0) return;
+    signIn().then(function () {
+      try {
+        if (GC.submitScore) {
+          // game-connect: { leaderboardID, totalScoreAmount }
+          GC.submitScore({ leaderboardID: LEADERBOARD_ID, totalScoreAmount: Math.floor(score) });
+        } else if (GC.reportScore) {
+          GC.reportScore({ leaderboardId: LEADERBOARD_ID, score: Math.floor(score) });
+        }
+      } catch (e) {}
+    });
+  }
+
+  // Intento de login temprano (no molesta si el usuario lo rechaza)
+  setTimeout(signIn, 1500);
+
+  // Envuelve los puntos donde el juego ya conoce la puntuación final
+  function wrap(name) {
+    if (!window.NX || !NX.ui || !NX.ui[name]) { return false; }
+    var orig = NX.ui[name];
+    NX.ui[name] = function (score) {
+      try { submit(score); } catch (e) {}
+      return orig.apply(this, arguments);
+    };
+    return true;
+  }
+  function wireUp() {
+    var ok = wrap("showGameOver") && wrap("showVictory");
+    if (!ok) setTimeout(wireUp, 300);
+  }
+  wireUp();
+
+  // Expone una API mínima por si quieres un botón "ver marcadores"
+  window.NX = window.NX || {};
+  NX.gc = {
+    showLeaderboard: function () {
+      try {
+        var fn = GC.showLeaderboard || GC.showLeaderboards;
+        if (fn) fn.call(GC, { leaderboardID: LEADERBOARD_ID });
+      } catch (e) {}
+    }
+  };
+})();
+
 </script>
 </body>
 </html>
