@@ -235,6 +235,24 @@ html, body {
 .mbtn.opt { width: 100%; }
 
 </style>
+
+<!-- Pantalla de inicio (iOS) y PWA instalable a pantalla completa -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<!-- Compartir: Open Graph + Twitter Card -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NEON EXODUS 2087">
+<meta property="og:title" content="NEON EXODUS 2087">
+<meta property="og:description" content="Arcade synthwave de acción. Neo-Madrid, 2087: cruza 8 sectores hasta la IA M.A.D.R.E. Quema neón, runner.">
+<meta property="og:url" content="https://ruben-arconada.github.io/neon-exodus-2087/">
+<meta property="og:image" content="https://ruben-arconada.github.io/neon-exodus-2087/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NEON EXODUS 2087">
+<meta name="twitter:description" content="Arcade synthwave de acción. Neo-Madrid, 2087. Quema neón, runner.">
+<meta name="twitter:image" content="https://ruben-arconada.github.io/neon-exodus-2087/og.png">
 </head>
 <body>
 <div id="stage">
@@ -487,13 +505,43 @@ NX.audio = (function () {
   var SONGS = {
     title:  { bpm: 96,  root: 45, prog: [0, -4, -7, -2], mood: 0.55, lead: false },
     sector0:{ bpm: 118, root: 45, prog: [0, 8, 3, 10],   mood: 0.7,  lead: true  },
-    sector1:{ bpm: 124, root: 43, prog: [0, 5, 8, 7],    mood: 0.75, lead: true  },
-    sector2:{ bpm: 112, root: 41, prog: [0, 3, -2, 5],   mood: 0.6,  lead: true  },
-    sector3:{ bpm: 132, root: 47, prog: [0, 8, 5, 7],    mood: 0.85, lead: true  },
+    sector1: { bpm: 120, root: 43, prog: [0, 5, 8, 7], mood: 0.62, lead: true, swing: 0.16, // Mercado: groove nocturno, pluck líder
+      drums: { kick:[1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1], hat:[1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,0], openHat:[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0] },
+      bass:     [0,-1,0,12,0,-1,7,-1,5,-1,5,7,0,-1,7,8],
+      arpShape: [0,3,7,3,10,7,12,7,0,3,8,3,7,3,10,7],
+      riff:     [12,-1,10,-1,8,-1,7,-1,5,-1,7,8,-1,10,-1,-1],
+      extra: { voice: "pluck", pattern:[0,-1,-1,3,-1,7,-1,5,-1,3,-1,0,-1,10,-1,-1] } },
+    sector2: { bpm: 96, root: 41, prog: [0, 3, -2, 5], mood: 0.45, lead: true, swing: 0, // Cloacas: dub industrial, bajo + stab
+      drums: { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], hat:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1], openHat:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0] },
+      bass:     [0,-1,-1,-1,0,-1,-1,3,-2,-1,-1,-1,3,-1,-1,0],
+      arpShape: [0,-1,7,-1,-1,-1,10,-1,0,-1,7,-1,-1,3,-1,-1],
+      riff:     [-1,-1,-1,-1,7,-1,-1,-1,-1,-1,3,-1,-1,-1,-1,-1],
+      extra: { voice: "stab", pattern:[-1,-1,0,-1,-1,-1,-1,3,-1,-1,-1,-1,7,-1,-1,-1] } },
+    sector3: { bpm: 134, root: 47, prog: [0, 8, 5, 7], mood: 0.88, lead: true, swing: 0, // Torre: dramático marcial, stab + lead heroico
+      drums: { kick:[1,0,0,0,1,0,0,1,1,0,0,0,1,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], openHat:[0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0] },
+      bass:     [0,0,12,0,0,0,12,0,5,5,12,5,7,7,12,7],
+      arpShape: [0,3,7,12,3,7,12,15,7,12,15,19,12,15,19,22],
+      riff:     [12,-1,-1,15,-1,19,-1,-1,22,-1,19,-1,24,-1,15,-1],
+      extra: { voice: "stab", pattern:[-1,-1,-1,0,-1,-1,-1,7,-1,-1,-1,3,-1,-1,8,-1] } },
     sector4:{ bpm: 138, root: 44, prog: [0, 1, 0, -2],   mood: 0.95, lead: true  },
-    sector5:{ bpm: 140, root: 43, prog: [0, -2, -5, -2], mood: 0.92, lead: true  }, // Espejo (introspección)
-    sector6:{ bpm: 142, root: 41, prog: [0, 3, -1, 4],   mood: 0.97, lead: true  }, // Jardín (seducción)
-    sector7:{ bpm: 145, root: 42, prog: [0, 5, 3, 7],    mood: 0.99, lead: true  }, // Memorial (comunión)
+    sector5: { bpm: 128, root: 43, prog: [0, -2, -5, -2], mood: 0.7, lead: true, swing: 0.12, // Espejo: hipnótico, bell en espejo
+      drums: { kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], openHat:[0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0] },
+      bass:     [0,-1,7,-1,12,-1,7,-1,0,-1,7,-1,12,-1,7,-1],
+      arpShape: [0,5,7,12,15,12,7,5,0,5,7,12,15,12,7,5],
+      riff:     [12,-1,10,7,10,12,-1,15,15,-1,12,10,7,10,-1,12],
+      extra: { voice: "bell", pattern:[0,7,12,15,-1,-1,-1,-1,15,12,7,0,-1,-1,-1,-1] } },
+    sector6: { bpm: 116, root: 41, prog: [0, 3, -1, 4], mood: 0.75, lead: true, swing: 0.24, // Jardín: seductor, swing alto, pluck coqueto
+      drums: { kick:[1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hat:[0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0], openHat:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0] },
+      bass:     [0,-1,0,-1,7,-1,-1,5,0,-1,0,3,4,-1,-1,7],
+      arpShape: [0,3,7,10,12,10,7,3,5,8,12,8,5,3,7,10],
+      riff:     [-1,12,-1,10,12,-1,8,-1,10,-1,7,-1,8,10,-1,-1],
+      extra: { voice: "pluck", pattern:[-1,12,-1,15,-1,10,-1,12,-1,7,-1,8,-1,10,-1,12] } },
+    sector7: { bpm: 130, root: 42, prog: [0, 5, 3, 7], mood: 0.85, lead: true, swing: 0.06, // Memorial: himno cálido, bell ascendente
+      drums: { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,1], hat:[1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1], openHat:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1] },
+      bass:     [0,-1,0,7,0,-1,7,-1,0,-1,0,7,12,-1,7,-1],
+      arpShape: [0,7,12,7,3,10,12,15,0,7,12,15,17,15,12,7],
+      riff:     [7,-1,12,-1,15,-1,12,-1,10,12,15,-1,17,-1,19,-1],
+      extra: { voice: "bell", pattern:[12,-1,-1,15,-1,-1,17,-1,12,-1,-1,15,-1,17,-1,19] } },
     boss:   { bpm: 148, root: 42, prog: [0, 6, 1, 7],    mood: 1.0,  lead: true  },
     ending: { bpm: 84,  root: 48, prog: [0, -4, -7, -5], mood: 0.4,  lead: false }
   };
@@ -623,6 +671,56 @@ NX.audio = (function () {
     v.start(t); v.stop(t + dur + 0.05);
   }
 
+  /* --- Voces nuevas (identidad instrumental por sector) -------- */
+  // pluck: punteo corto y brillante (mercado, jardín)
+  function pluck(midi, t, dur) {
+    var o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    o.type = "triangle"; o.frequency.value = midiToFreq(midi);
+    f.type = "lowpass";
+    f.frequency.setValueAtTime(4200, t);
+    f.frequency.exponentialRampToValueAtTime(1400, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.07, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(f); f.connect(g); g.connect(musicBus);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+  // stab: acorde menor corto y agresivo (cloacas, torre)
+  function stab(midi, t, dur) {
+    var f = ctx.createBiquadFilter(), g = ctx.createGain();
+    f.type = "lowpass";
+    f.frequency.setValueAtTime(300, t);
+    f.frequency.exponentialRampToValueAtTime(3000, t + 0.02);
+    f.frequency.exponentialRampToValueAtTime(600, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.09, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    var ch = [0, 3, 7];
+    for (var c = 0; c < ch.length; c++) {
+      var o = ctx.createOscillator();
+      o.type = "sawtooth"; o.frequency.value = midiToFreq(midi + ch[c]);
+      o.connect(f); o.start(t); o.stop(t + dur + 0.02);
+    }
+    f.connect(g); g.connect(musicBus);
+  }
+  // bell: campana FM cristalina (espejo, memorial)
+  function bell(midi, t, dur) {
+    var car = ctx.createOscillator(), g = ctx.createGain();
+    var mod = ctx.createOscillator(), modG = ctx.createGain();
+    var f0 = midiToFreq(midi);
+    car.type = "sine"; car.frequency.value = f0;
+    mod.type = "sine"; mod.frequency.value = f0 * 2;          // ratio 2:1
+    modG.gain.setValueAtTime(f0 * 2.5, t);                    // índice de modulación decreciente
+    modG.gain.exponentialRampToValueAtTime(1, t + dur * 0.6);
+    mod.connect(modG); modG.connect(car.frequency);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.075, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    car.connect(g); g.connect(musicBus);
+    car.start(t); car.stop(t + dur + 0.05);
+    mod.start(t); mod.stop(t + dur + 0.05);
+  }
+
   /* --- Secuenciador --------------------------------------------
      64 pasos = 4 compases. Cada compás usa un acorde de la
      progresión. Patrones fijos con variación pseudo-aleatoria
@@ -637,29 +735,57 @@ NX.audio = (function () {
     var root = song.root + chord;
     var spb = 60 / song.bpm;           // segundos por negra
     var s16 = spb / 4;
+    // Patrones por canción (si no, el tema principal compartido):
+    var arpShape = song.arpShape || ARP_SHAPE;
+    var riff = song.riff || LEAD_RIFF;
 
-    // Batería
-    if (i % 4 === 0) kick(t);
-    if (song.mood > 0.8 && i === 14) kick(t);          // empuje extra en temas intensos
-    if (i === 4 || i === 12) snare(t);
-    if (i % 2 === 0) hat(t, false);
-    if (i === 10) hat(t, true);
+    // Swing: retrasa las semicorcheas impares (shuffle por canción)
+    var sw = song.swing ? (song.swing < 0 ? 0 : (song.swing > 0.4 ? 0.4 : song.swing)) : 0;
+    if (sw && (i & 1)) t += sw * s16;
 
-    // Bajo: corcheas con octava
-    if (i % 2 === 0) {
+    // Batería: patrón por canción o el fijo por defecto
+    if (song.drums) {
+      var dr = song.drums;
+      if (dr.kick[i]) kick(t);
+      if (dr.snare[i]) snare(t);
+      if (dr.hat[i]) hat(t, false);
+      if (dr.openHat[i]) hat(t, true);
+    } else {
+      if (i % 4 === 0) kick(t);
+      if (song.mood > 0.8 && i === 14) kick(t);        // empuje extra en temas intensos
+      if (i === 4 || i === 12) snare(t);
+      if (i % 2 === 0) hat(t, false);
+      if (i === 10) hat(t, true);
+    }
+
+    // Bajo: patrón por canción (-1 = silencio) o las corcheas con octava por defecto
+    if (song.bass) {
+      var bv = song.bass[i];
+      if (bv >= 0) bass(root + bv - 12, t, s16 * 1.8);
+    } else if (i % 2 === 0) {
       var b = (i % 8 === 6) ? root + 12 : root;
       bass(b - 12, t, s16 * 1.8);
     }
 
-    // Arpegio: semicorcheas continuas
-    arp(root + ARP_SHAPE[i], t, s16 * 0.9);
+    // Arpegio: semicorcheas continuas (-1 = silencio, para texturas dispersas)
+    if (arpShape[i] >= 0) arp(root + arpShape[i], t, s16 * 0.9);
 
     // Pad al cambio de acorde
     if (i === 0) pad(root + 12, t, spb * 4);
 
+    // Voz extra por canción: pluck / stab / bell (-1 = silencio)
+    if (song.extra && song.extra.voice !== "none") {
+      var ev = song.extra.pattern[i];
+      if (ev >= 0) {
+        if (song.extra.voice === "pluck") pluck(root + ev + 12, t, s16 * 1.1);
+        else if (song.extra.voice === "stab") stab(root + ev, t, s16 * 0.9);
+        else if (song.extra.voice === "bell") bell(root + ev + 12, t, spb * 1.6);
+      }
+    }
+
     // Lead: riff en compases 3 y 4
     if (song.lead && bar >= 2) {
-      var n = LEAD_RIFF[i];
+      var n = riff[i];
       if (n >= 0) lead(root + 12 + n, t, s16 * 1.6);
     }
   }
