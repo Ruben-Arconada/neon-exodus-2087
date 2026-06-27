@@ -28,8 +28,14 @@ npm run assets              # genera iconos y splash desde resources/icon.png
 npx cap sync ios            # copia web + plugins al proyecto nativo
 ```
 
-> Si `npm run assets` se queja, instala la herramienta: `npm i -D @capacitor/assets`
-> y vuelve a ejecutarlo. Usa `resources/icon.png` (1024×1024) y `resources/splash.png`.
+> **Validado:** las dependencias de Capacitor 6 resuelven sin conflictos
+> (core/ios/cli 6.2.1, haptics 6.0.3) y el repo trae `package-lock.json` para
+> instalación reproducible.
+>
+> `npm run assets` usa `@capacitor/assets`, que depende de `sharp` (binario
+> nativo). En macOS instala sin problema. Si fallara, alternativa manual:
+> abre `ios/App/App/Assets.xcassets/AppIcon.appiconset` en Xcode y arrastra
+> `resources/icon.png` (1024×1024) — Xcode 14+ acepta icono de un solo tamaño.
 
 ---
 
@@ -56,10 +62,33 @@ Ajustes recomendados (pestaña **General**):
 
 ---
 
-## 3. 🍏 Probar en tu iPhone real
-Conecta el iPhone 14 Pro Max por cable, selecciónalo arriba como destino y
-pulsa ▶ (Run). La primera vez el teléfono pedirá *confiar* en tu certificado:
-Ajustes → General → VPN y gestión de dispositivos → confía en tu perfil.
+## 3. 🍏 Probar en tu iPhone real (instalación por cable)
+Esto es lo que harás para **probar y dar feedback** antes del despliegue.
+
+1. Conecta el iPhone 14 Pro Max por cable y desbloquéalo. Si pregunta, pulsa
+   **Confiar en este ordenador**.
+2. En Xcode, arriba (junto al nombre del esquema), selecciona tu iPhone como
+   destino en lugar de un simulador.
+3. Pulsa ▶ (Run). Xcode compila, firma con tu cuenta e instala la app.
+4. Primera vez: el iPhone pedirá *confiar* en tu certificado de desarrollador →
+   **Ajustes → General → VPN y gestión de dispositivos** → confía en tu perfil.
+5. Abre la app desde la pantalla de inicio. ¡A jugar y anotar feedback!
+
+Atajo por terminal (equivalente al botón Run, sin abrir Xcode):
+```bash
+npx cap run ios --target="<ID-de-tu-iPhone>"
+# lista los dispositivos disponibles:
+xcrun xctrace list devices
+```
+
+> Como tu cuenta de desarrollador es **de pago**, el perfil de aprovisionamiento
+> dura **1 año** (con cuenta gratis caducaría a los 7 días). No necesitas subir
+> nada a App Store para esta prueba por cable.
+>
+> **Alternativa para iterar feedback sin cable: TestFlight.** Tras el primer
+> *Archive + Upload* (sección 5), instalas builds nuevas desde la app
+> **TestFlight** en el iPhone, y puedes invitar a más probadores por email. Es
+> el mejor circuito de feedback una vez tengas la cuenta de ASC creada.
 
 ---
 
