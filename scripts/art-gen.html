@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>html,body{margin:0;padding:0;background:#000;overflow:hidden}canvas{display:block}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+/* Generador de arte para iconos/splash de NEON EXODUS 2087.
+   Dibuja el emblema neón (nave + sol synthwave + rejilla) a la
+   resolución pedida. Iria Cromo (dir. arte) firma la composición. */
+function draw(size, mode) {
+  var cv = document.getElementById('c');
+  cv.width = size; cv.height = size;
+  var x = cv.getContext('2d');
+  var S = size, c = S / 2;
+
+  // Fondo degradado violeta-negro
+  var bg = x.createRadialGradient(c, S * 0.42, S * 0.05, c, S * 0.5, S * 0.75);
+  bg.addColorStop(0, '#1b0533');
+  bg.addColorStop(1, '#070010');
+  x.fillStyle = bg; x.fillRect(0, 0, S, S);
+
+  var horizon = S * 0.60;
+
+  // Sol synthwave con franjas
+  var sunR = S * 0.26, sunX = c, sunY = horizon - sunR * 0.15;
+  x.save();
+  x.beginPath(); x.arc(sunX, sunY, sunR, 0, Math.PI * 2); x.clip();
+  var sg = x.createLinearGradient(0, sunY - sunR, 0, sunY + sunR);
+  sg.addColorStop(0, '#ffd319'); sg.addColorStop(0.5, '#ff2bd6'); sg.addColorStop(1, '#8a2bff');
+  x.fillStyle = sg; x.fillRect(sunX - sunR, sunY - sunR, sunR * 2, sunR * 2);
+  x.fillStyle = '#070010';
+  for (var i = 0; i < 7; i++) {
+    var yy = sunY + sunR * 0.15 + i * (sunR * 0.16);
+    x.fillRect(sunX - sunR, yy, sunR * 2, sunR * 0.12 + i * (sunR * 0.012));
+  }
+  x.restore();
+  // halo
+  x.globalAlpha = 0.25;
+  x.fillStyle = '#ff2bd6';
+  x.beginPath(); x.arc(sunX, sunY, sunR * 1.25, 0, Math.PI * 2); x.fill();
+  x.globalAlpha = 1;
+
+  // Rejilla en perspectiva bajo el horizonte
+  x.strokeStyle = '#19e6ff'; x.globalAlpha = 0.5; x.lineWidth = Math.max(1, S * 0.004);
+  for (var gx = -7; gx <= 7; gx++) {
+    x.beginPath(); x.moveTo(c + gx * (S * 0.03), horizon);
+    x.lineTo(c + gx * (S * 0.16), S); x.stroke();
+  }
+  for (var r = 1; r <= 7; r++) {
+    var f = r / 7, gy = horizon + Math.pow(f, 2.3) * (S - horizon);
+    x.globalAlpha = 0.15 + f * 0.4;
+    x.beginPath(); x.moveTo(0, gy); x.lineTo(S, gy); x.stroke();
+  }
+  x.globalAlpha = 1;
+  // línea de horizonte
+  x.strokeStyle = '#ff2bd6'; x.lineWidth = Math.max(2, S * 0.008);
+  x.beginPath(); x.moveTo(0, horizon); x.lineTo(S, horizon); x.stroke();
+
+  // Nave (flecha neón) centrada sobre el sol
+  var px = c, py = horizon - S * 0.02, pr = S * 0.13;
+  x.save();
+  x.translate(px, py);
+  x.strokeStyle = '#19e6ff'; x.lineWidth = Math.max(3, S * 0.018);
+  x.shadowColor = '#19e6ff'; x.shadowBlur = S * 0.05;
+  x.beginPath();
+  x.moveTo(0, -pr * 1.5);
+  x.lineTo(pr, pr * 1.1);
+  x.lineTo(0, pr * 0.45);
+  x.lineTo(-pr, pr * 1.1);
+  x.closePath(); x.stroke();
+  x.fillStyle = '#ff2bd6'; x.shadowColor = '#ff2bd6';
+  x.beginPath(); x.arc(0, -pr * 0.25, pr * 0.32, 0, Math.PI * 2); x.fill();
+  x.restore();
+  x.shadowBlur = 0;
+
+  if (mode === 'splash') {
+    // Texto del título solo en el splash (en icono no, queda mejor limpio)
+    x.textAlign = 'center';
+    x.fillStyle = '#ff2bd6'; x.shadowColor = '#ff2bd6'; x.shadowBlur = S * 0.02;
+    x.font = 'bold ' + (S * 0.075) + 'px "Courier New", monospace';
+    x.fillText('NEON', c, S * 0.80);
+    x.fillStyle = '#19e6ff'; x.shadowColor = '#19e6ff';
+    x.fillText('EXODUS', c, S * 0.80 + S * 0.085);
+    x.shadowBlur = 0; x.fillStyle = '#ffd319';
+    x.font = 'bold ' + (S * 0.03) + 'px "Courier New", monospace';
+    x.fillText('2 0 8 7', c, S * 0.80 + S * 0.135);
+  }
+  window.__done = true;
+}
+</script>
+</body>
+</html>

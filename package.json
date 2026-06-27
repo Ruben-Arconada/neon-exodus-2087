@@ -1,0 +1,25 @@
+{
+  "name": "neon-exodus-2087",
+  "version": "1.0.0",
+  "description": "NEON EXODUS 2087 — arcade synthwave de Estudio Siete//Siete",
+  "private": true,
+  "scripts": {
+    "sync-web": "node scripts/cap-sync.js",
+    "build": "npm run sync-web",
+    "cap:add-ios": "npm run build && npx cap add ios",
+    "cap:sync": "npm run build && npx cap sync ios",
+    "cap:open": "npx cap open ios",
+    "assets": "npx @capacitor/assets generate --ios --iconBackgroundColor '#0a0014' --splashBackgroundColor '#0a0014'"
+  },
+  "dependencies": {
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/haptics": "^6.0.0",
+    "@capacitor/ios": "^6.1.2",
+    "@capacitor/status-bar": "^6.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.1.2"
+  }
+}
