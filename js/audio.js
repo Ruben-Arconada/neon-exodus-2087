@@ -21,6 +21,9 @@ NX.audio = (function () {
     sector2:{ bpm: 112, root: 41, prog: [0, 3, -2, 5],   mood: 0.6,  lead: true  },
     sector3:{ bpm: 132, root: 47, prog: [0, 8, 5, 7],    mood: 0.85, lead: true  },
     sector4:{ bpm: 138, root: 44, prog: [0, 1, 0, -2],   mood: 0.95, lead: true  },
+    sector5:{ bpm: 140, root: 43, prog: [0, -2, -5, -2], mood: 0.92, lead: true  }, // Espejo (introspección)
+    sector6:{ bpm: 142, root: 41, prog: [0, 3, -1, 4],   mood: 0.97, lead: true  }, // Jardín (seducción)
+    sector7:{ bpm: 145, root: 42, prog: [0, 5, 3, 7],    mood: 0.99, lead: true  }, // Memorial (comunión)
     boss:   { bpm: 148, root: 42, prog: [0, 6, 1, 7],    mood: 1.0,  lead: true  },
     ending: { bpm: 84,  root: 48, prog: [0, -4, -7, -5], mood: 0.4,  lead: false }
   };

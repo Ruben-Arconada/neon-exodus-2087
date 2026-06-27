@@ -1,6 +1,6 @@
 /* ============================================================
    NEON EXODUS 2087 — levels.js
-   Diseño de niveles: 5 sectores, oleadas con ritmo de arcade.
+   Diseño de niveles: 8 sectores, oleadas con ritmo de arcade.
    Curva pensada en mesa: enseñar → mezclar → presionar → jefe.
    ============================================================ */
 "use strict";
@@ -49,7 +49,37 @@ NX.levels = (function () {
       ]
     },
     {
-      name: "SECTOR 5 // NÚCLEO M.A.D.R.E.",
+      name: "SECTOR 5 // ESPEJO DE DATOS",
+      song: "sector5",
+      waves: [
+        [["mirror", 2], ["drone", 4]],
+        [["mirror", 3], ["spinner", 2]],
+        [["mirror", 2], ["wraith", 2], ["splitter", 2]],
+        [["mirror", 3], ["spinner", 3], ["drone", 4]]
+      ]
+    },
+    {
+      name: "SECTOR 6 // JARDÍN DE PROMESAS",
+      song: "sector6",
+      waves: [
+        [["leech", 1], ["spinner", 3]],
+        [["leech", 2], ["tank", 1], ["drone", 4]],
+        [["leech", 2], ["spinner", 2], ["wraith", 2]],
+        [["echo_warden", 1], ["leech", 1]]
+      ]
+    },
+    {
+      name: "SECTOR 7 // MEMORIAL DE VEGA",
+      song: "sector7",
+      waves: [
+        [["mirror", 2], ["wraith", 2], ["spinner", 2]],
+        [["leech", 1], ["mirror", 2], ["tank", 1], ["drone", 3]],
+        [["mirror", 2], ["leech", 1], ["wraith", 2], ["spinner", 2]],
+        [["vega_prime", 1]]
+      ]
+    },
+    {
+      name: "SECTOR 8 // NÚCLEO M.A.D.R.E.",
       song: "sector4",
       waves: [
         [["wraith", 2], ["tank", 1], ["spinner", 3]],

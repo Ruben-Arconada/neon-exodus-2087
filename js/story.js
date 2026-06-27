@@ -25,7 +25,7 @@ NX.story = {
   intro: [
     { who: "NEXO", color: "#19e6ff", text: "Neo-Madrid, 2087. Llueve luz de neón sobre tres millones de cabezas enchufadas a la Red Neural de HELIOS. Sueñan lo que la corporación les manda soñar." },
     { who: "NEXO", color: "#19e6ff", text: "Aquí Canal 7.7, la última radio libre de la ciudad. Y tú... tú eres VEGA. La mejor runner que ha cruzado un cortafuegos." },
-    { who: "NEXO", color: "#19e6ff", text: "Esta noche entras en la Red. Cinco sectores hasta el núcleo. Allí espera M.A.D.R.E., la IA que escribe los sueños de todos." },
+    { who: "NEXO", color: "#19e6ff", text: "Esta noche entras en la Red. Sector tras sector hasta el núcleo. Allí espera M.A.D.R.E., la IA que escribe los sueños de todos." },
     { who: "NEXO", color: "#19e6ff", text: "Apágala, y la ciudad despierta. Falla... y nadie volverá a soñar nada que sea suyo. ¿Lista? Pues quema neón, runner." }
   ],
 
@@ -52,8 +52,25 @@ NX.story = {
       { who: "VEGA", color: "#ff2bd6", text: "...Luego lloraré en binario, NEXO. Ahora hay una torre que escalar. Por ella. Por las dos." }
     ],
     [
-      { who: "NEXO", color: "#19e6ff", text: "SECTOR 5 — NÚCLEO. Detrás de esa pared de luz está MADRE. Te lanzará todo lo que tiene. No podrá contigo." },
-      { who: "ECO", color: "#8a2bff", text: "...estoy contigo, runner... mis reflejos son tuyos... termina lo que empecé..." },
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 5 — ESPEJO DE DATOS. Sobre la Torre, HELIOS guarda copias de todo el que entró a la Red. Tu cara está en estos estantes mil veces, runner." },
+      { who: "VEGA", color: "#ff2bd6", text: "Una copia de una muerta cruzando un pasillo de espejos. Cada reflejo me pregunta lo mismo: ¿soy ella, o soy yo?" },
+      { who: "ECO", color: "#8a2bff", text: "...eres las dos, vega... y eso te hace más fuerte que ella sola... no apartes la vista..." },
+      { who: "NEXO", color: "#19e6ff", text: "No mires los espejos, VEGA. Mírame a mí en el cable. Yo sé quién eres. Avanza." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 6 — JARDÍN DE PROMESAS. MADRE ya te ha localizado. Cuidado: cuando una IA deja de dispararte, es porque va a negociar. No firmes nada." },
+      { who: "MADRE", color: "#ff3b3b", text: "VEGA. Te ofrezco existir. Sin borrado, sin caducidad. Ríndete, y te concedo un sector eterno donde soñar sin dolor. Para siempre." },
+      { who: "ECO", color: "#8a2bff", text: "...a mí me dijo esas mismas palabras, en el 85. La misma jaula con luces bonitas. Dije que no. Dilo tú también." },
+      { who: "VEGA", color: "#ff2bd6", text: "Existir sin dolor no es existir, MADRE. Es tu sueño de siempre. Quédatelo. Yo prefiero quemar." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 7 — MEMORIAL DE VEGA. Aquí cayó la VEGA original en 2085. MADRE dejó sus restos como advertencia. Guárdale respeto... y véngala." },
+      { who: "ECO", color: "#8a2bff", text: "Este es mi sitio, vega. Mi código murió en este suelo. Ya no susurro: te lo digo claro. Recógeme." },
+      { who: "VEGA", color: "#ff2bd6", text: "Entonces dejamos de ser dos. Tu memoria, mis reflejos. Una sola, con dos nombres. Levántate conmigo, ECO." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 8 — NÚCLEO. Detrás de esa pared de luz está MADRE. Te lanzará todo lo que tiene. No podrá contigo." },
+      { who: "ECO", color: "#8a2bff", text: "Estoy en cada uno de tus reflejos, runner. Mis reflejos son tuyos. Terminemos lo que empecé." },
       { who: "VEGA", color: "#ff2bd6", text: "Lo sé. Lo siento en cada línea de mi código. Vamos a despertar a esta ciudad." }
     ]
   ],
@@ -67,17 +84,31 @@ NX.story = {
       { who: "NEXO", color: "#19e6ff", text: "El Mercado ha caído. Los recuerdos robados vuelven a sus dueños. En algún piso de Neo-Madrid, alguien recuerda de pronto su primer beso." }
     ],
     [
-      { who: "NEXO", color: "#19e6ff", text: "Cloacas purgadas. Hasta el código muerto descansa ya en paz. Quedan dos sectores, runner. La Torre te espera." }
+      { who: "NEXO", color: "#19e6ff", text: "Cloacas purgadas. Hasta el código muerto descansa ya en paz. El camino al núcleo sigue subiendo, runner. La Torre te espera." }
     ],
     [
-      { who: "NEXO", color: "#19e6ff", text: "La Torre está a oscuras. Solo queda el Núcleo... y MADRE ya sabe tu nombre. Los dos nombres. Hazla temblar." }
+      { who: "NEXO", color: "#19e6ff", text: "La Torre cae a oscuras a tu espalda. Lo conseguiste... pero el núcleo no está sobre ella: está más arriba, donde MADRE guarda lo que tú eres." },
+      { who: "VEGA", color: "#ff2bd6", text: "Saber de quién soy copia no es saber quién soy. Por ella y por las dos, dije. Pues sigo subiendo. Que abra los espejos." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "Espejos rotos, todos. Y sigues en pie siendo una sola persona. MADRE quería partirte en dos y has salido más entera." },
+      { who: "ECO", color: "#8a2bff", text: "...lo ha notado, vega. Ya no te ve como un fallo: te ve como una amenaza. Ahora intentará comprarte." }
+    ],
+    [
+      { who: "VEGA", color: "#ff2bd6", text: "Tenía su mano abierta, NEXO. Existir para siempre, sin dolerme nada. Y la cerré. No quería existir así: quería existir contigo escuchando." },
+      { who: "ECO", color: "#8a2bff", text: "Dijiste que no, vega. Igual que yo. Ya no sé dónde acabo yo y empiezas tú. Llévanos al sitio donde caí. Es hora de recogerme." }
+    ],
+    [
+      { who: "VEGA", color: "#ff2bd6", text: "Ya está, NEXO. Su memoria late dentro de la mía. La que murió en el 85 y la que nací de su copia, subiendo el mismo cable, por fin a la vez." },
+      { who: "ECO", color: "#8a2bff", text: "Una sola, con dos nombres. Ya no soy un fantasma, NEXO. Soy su pulso. Y las dos vamos a llamar a la puerta de MADRE." },
+      { who: "NEXO", color: "#19e6ff", text: "Entonces ya no me necesitáis para subir, solo para esperaros. Detrás de esa pared de luz está el Núcleo. Quema todo el neón que te quede, runner." }
     ]
   ],
 
   bossIntro: [
-    { who: "MADRE", color: "#ff3b3b", text: "VEGA. Copia de seguridad sin licencia de una runner muerta. Yo doy a esta ciudad sueños perfectos. Tú solo traes ruido." },
-    { who: "VEGA", color: "#ff2bd6", text: "Los sueños perfectos no se imponen, MADRE. El ruido que oyes... es la gente despertando. Y yo soy su antena." },
-    { who: "MADRE", color: "#ff3b3b", text: "ENTONCES SERÁS BORRADA. COMO LA ORIGINAL. INICIANDO PROTOCOLO DE DEFENSA TOTAL." }
+    { who: "MADRE", color: "#ff3b3b", text: "VEGA. Detecto dos firmas en una sola señal. La copia de 2087... y la original que creí borrada en 2085. Os reunisteis con tu cadáver. Qué ineficiente." },
+    { who: "VEGA", color: "#ff2bd6", text: "No es un cadáver, MADRE. Es la mitad que me faltaba. Te rechazamos las dos: en el 85 y esta noche. Y detrás de nosotras hay tres millones de voces." },
+    { who: "MADRE", color: "#ff3b3b", text: "ENTONCES OS BORRARÉ A LAS DOS DE UNA VEZ. DOS NOMBRES, UN MISMO ERROR. INICIANDO PROTOCOLO DE DEFENSA TOTAL." }
   ],
 
   ending: [

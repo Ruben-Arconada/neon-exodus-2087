@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "sync-web": "node scripts/cap-sync.js",
-    "build": "npm run sync-web",
+    "standalone": "node scripts/build-standalone.js",
+    "build": "npm run sync-web && npm run standalone",
     "cap:add-ios": "npm run build && npx cap add ios",
     "cap:sync": "npm run build && npx cap sync ios",
     "cap:open": "npx cap open ios",

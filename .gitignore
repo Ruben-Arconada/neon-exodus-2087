@@ -7,8 +7,7 @@ www/
 # Capacitor / iOS — la carpeta ios/ se genera en el Mac con `npx cap add ios`.
 # Se ignoran los artefactos pesados; el proyecto Xcode sí puedes versionarlo
 # si quieres, pero por defecto lo dejamos fuera para mantener el repo limpio.
-ios/App/Pods/
-ios/App/App/public/
+ios/
 DerivedData/
 *.xcuserstate
 .DS_Store

@@ -35,6 +35,7 @@ NX.entities = (function () {
       shield: 0,
       power: null, powerT: 0,    // TRIPLE / RAPID
       slowmoT: 0,
+      tether: 0,                 // anclaje del leech (0..1): reduce la velocidad de VEGA
       trail: [],
       alive: true
     };
@@ -335,6 +336,50 @@ NX.entities = (function () {
         }
         break;
       }
+      case "mirror": {
+        // reflejo de VEGA: la persigue con ~0.3 s de retardo y dispara telegrafiado
+        if (!e.ghost) e.ghost = [];
+        e.ghost.unshift({ x: p.x, y: p.y });
+        if (e.ghost.length > 18) e.ghost.pop();
+        var mt = e.ghost[e.ghost.length - 1];
+        var mang = NX.angleTo(e.x, e.y, mt.x, mt.y);
+        e.vx = NX.lerp(e.vx, Math.cos(mang) * e.speed, dt * 4);
+        e.vy = NX.lerp(e.vy, Math.sin(mang) * e.speed, dt * 4);
+        e.fireT -= dt;
+        if (e.fireT <= 0.8) e.aiming = true;        // telegrafía honesta de 0.8 s
+        if (e.fireT <= 0) {
+          e.fireT = def.fireRate;
+          e.aiming = false;
+          eShoot(e, p.x, p.y, def.bulletSpeed);
+          NX.audio.sfx.enemyShoot();
+        }
+        break;
+      }
+      case "leech": {
+        // sonda de MADRE: no dispara, te ANCLA con un haz (te ralentiza)
+        var ld = Math.sqrt(NX.dist2(e.x, e.y, p.x, p.y)) || 1;
+        var lwant = 170 * scale;
+        var lang = NX.angleTo(e.x, e.y, p.x, p.y);
+        if (ld > lwant) {
+          e.vx = Math.cos(lang) * e.speed;
+          e.vy = Math.sin(lang) * e.speed;
+          e.lockT = 0.8; e.tether = false;          // fuera de rango: re-arma el aviso
+        } else {
+          e.vx *= 0.9; e.vy *= 0.9;
+          if (p.dashT > 0) {
+            e.lockT = 0.8; e.tether = false;        // el dash rompe el anclaje
+          } else {
+            e.lockT = (e.lockT === undefined ? 0.8 : e.lockT) - dt;
+            if (e.lockT <= 0) {
+              e.tether = true;
+              p.tether = Math.max(p.tether || 0, 1); // ancla: jugador al 60% de velocidad
+            }
+          }
+        }
+        break;
+      }
+      case "echo_warden":
+      case "vega_prime": updateMiniBoss(e, dt, w, h, p); break;
       case "boss": updateBoss(e, dt, w, h, p); break;
     }
 
@@ -423,6 +468,118 @@ NX.entities = (function () {
     e.y = NX.clamp(e.y, e.radius, h * 0.6);
   }
 
+  /* ---------------- Mini-jefes: Centinela (echo_warden) y VEGA original (vega_prime)
+     Dos fases por HP (>50% / <=50%). NO llevan boss:true: mueren por la rama
+     normal de damageEnemy, así la cadena de sectores sigue su curso.        */
+  function updateMiniBoss(e, dt, w, h, p) {
+    var frac = e.hp / e.hpMax;
+    var phase = frac > 0.5 ? 0 : 1;
+    if (phase !== e.phase) {
+      e.phase = phase;
+      NX.audio.sfx.bossRoar();
+      NX.fx.flash(e.color, 0.35);
+      NX.fx.shake(9, 0.4);
+      NX.fx.ring(e.x, e.y, e.color, 220 * scale);
+      W.ebullets.length = 0;            // respiro al cambiar de fase
+    }
+    var cap = 90;                        // tope propio de balas (deja margen bajo el 110 global)
+
+    if (e.type === "echo_warden") {
+      // EL CENTINELA: deriva lenta + anillos de "cláusulas"
+      e.moveT -= dt;
+      if (e.moveT <= 0) {
+        e.moveT = NX.rand(2.2, 3.4);
+        e.tx = NX.rand(w * 0.25, w * 0.75);
+        e.ty = NX.rand(h * 0.18, h * 0.4);
+      }
+      var ma = NX.angleTo(e.x, e.y, e.tx, e.ty);
+      var md = Math.sqrt(NX.dist2(e.x, e.y, e.tx, e.ty));
+      var espd = e.speed * Math.min(1, md / 60);
+      e.vx = NX.lerp(e.vx, Math.cos(ma) * espd, dt * 2);
+      e.vy = NX.lerp(e.vy, Math.sin(ma) * espd, dt * 2);
+
+      e.attackT -= dt;
+      if (e.attackT <= 0) {
+        if (phase === 0) {
+          e.attackT = 2.0;
+          NX.fx.ring(e.x, e.y, e.color, e.radius * 3);
+          if (W.ebullets.length < cap)
+            for (var i = 0; i < 12; i++) eShootAngle(e, (i / 12) * NX.TAU + e.t, 110, "#8a2bff");
+        } else {
+          e.attackT = 1.4;
+          NX.fx.ring(e.x, e.y, e.color, e.radius * 3);
+          if (W.ebullets.length < cap)
+            for (var j = 0; j < 14; j++) eShootAngle(e, (j / 14) * NX.TAU - e.t, 120, "#8a2bff");
+          for (var s = -1; s <= 1; s++) eShoot(e, p.x, p.y, 175, s * 0.22);
+        }
+        NX.audio.sfx.enemyShoot();
+      }
+    } else {
+      // LA VEGA ORIGINAL: dos recuerdos
+      if (phase === 0) {
+        // RECUERDO 1 «La última carrera»: persecución + embestidas telegrafiadas
+        e.dashT = (e.dashT === undefined ? 2.2 : e.dashT) - dt;
+        if (e.windup > 0) {
+          e.windup -= dt;
+          e.vx *= 0.85; e.vy *= 0.85;               // se detiene antes de embestir
+          if (e.windup <= 0) {
+            var ca = NX.angleTo(e.x, e.y, e.chargeX, e.chargeY);
+            e.vx = Math.cos(ca) * e.speed * 2.6;
+            e.vy = Math.sin(ca) * e.speed * 2.6;
+            e.charge = 0.45;
+          }
+        } else if (e.charge > 0) {
+          e.charge -= dt;                            // mantiene el impulso de la embestida
+        } else {
+          var va = NX.angleTo(e.x, e.y, p.x, p.y);
+          e.vx = NX.lerp(e.vx, Math.cos(va) * e.speed, dt * 3);
+          e.vy = NX.lerp(e.vy, Math.sin(va) * e.speed, dt * 3);
+          if (e.dashT <= 0) {
+            e.dashT = 2.2;
+            e.windup = 0.8;                          // telegrafía honesta (0.8 s)
+            e.chargeX = p.x; e.chargeY = p.y;
+            NX.fx.ring(e.x, e.y, "#f4f0ff", e.radius * 2.4);
+          }
+        }
+        e.shootT = (e.shootT === undefined ? 1.8 : e.shootT) - dt;
+        if (e.shootT <= 0) {
+          e.shootT = 1.8;
+          if (W.ebullets.length < cap)
+            for (var k = -2; k <= 2; k++) eShoot(e, p.x, p.y, 150, k * 0.15);
+          NX.audio.sfx.enemyShoot();
+        }
+      } else {
+        // RECUERDO 2 «El último no»: se planta + espiral doble + ráfaga apuntada
+        e.moveT -= dt;
+        if (e.moveT <= 0) {
+          e.moveT = NX.rand(2.4, 3.6);
+          e.tx = NX.rand(w * 0.3, w * 0.7);
+          e.ty = NX.rand(h * 0.2, h * 0.38);
+        }
+        var ma2 = NX.angleTo(e.x, e.y, e.tx, e.ty);
+        var md2 = Math.sqrt(NX.dist2(e.x, e.y, e.tx, e.ty));
+        var espd2 = e.speed * Math.min(1, md2 / 60);
+        e.vx = NX.lerp(e.vx, Math.cos(ma2) * espd2, dt * 2);
+        e.vy = NX.lerp(e.vy, Math.sin(ma2) * espd2, dt * 2);
+        e.spiralA += dt * 2.8;
+        e.attackT -= dt;
+        if (e.attackT <= 0) {
+          e.attackT = 0.14;
+          if (W.ebullets.length < cap) {
+            eShootAngle(e, e.spiralA, 135, "#b388ff");
+            eShootAngle(e, -e.spiralA + Math.PI, 135, "#f4f0ff");
+          }
+        }
+        e.aimT = (e.aimT === undefined ? 1.5 : e.aimT) - dt;
+        if (e.aimT <= 0) {
+          e.aimT = 1.5;
+          for (var s2 = -1; s2 <= 1; s2++) eShoot(e, p.x, p.y, 175, s2 * 0.2);
+          NX.audio.sfx.enemyShoot();
+        }
+      }
+    }
+  }
+
   /* ---------------- Actualización general ---------------- */
   function update(dt, w, h) {
     var p = W.player;
@@ -440,6 +597,9 @@ NX.entities = (function () {
     if (p.alive) {
       var inp = NX.input.state;
       NX.input.poll(p.x, p.y);
+
+      var tether = p.tether || 0;   // anclaje del frame anterior (leech)
+      p.tether = 0;                 // se reacumula en el update de enemigos (corren después)
 
       if (p.invuln > 0) p.invuln -= playerDt;
       if (p.shield > 0) p.shield -= playerDt;
@@ -463,7 +623,7 @@ NX.entities = (function () {
         p.vy = p.dashDy * NX.PLAYER.dashSpeed * scale;
         NX.fx.sparks(p.x, p.y, "#19e6ff", 3);
       } else {
-        var spd = NX.PLAYER.speed * scale;
+        var spd = NX.PLAYER.speed * scale * (1 - 0.4 * tether);
         p.vx = NX.lerp(p.vx, inp.move.x * spd, playerDt * 12);
         p.vy = NX.lerp(p.vy, inp.move.y * spd, playerDt * 12);
       }
@@ -660,6 +820,89 @@ NX.entities = (function () {
           ctx.lineTo(Math.cos(ta) * e.radius * 1.5, Math.sin(ta) * e.radius * 1.5);
           ctx.stroke();
         }
+        break;
+      case "mirror":
+        // reflejo del jugador: silueta de nave translúcida blanco-violeta
+        if (e.aiming && W.player) {
+          var maa = NX.angleTo(e.x, e.y, W.player.x, W.player.y);
+          ctx.save();
+          ctx.globalAlpha = 0.35 + 0.4 * Math.abs(Math.sin(e.t * 26));
+          neonStroke(ctx, c, 1.5, 8);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(maa) * e.radius * 3, Math.sin(maa) * e.radius * 3);
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.rotate(Math.atan2(e.vy, e.vx) + Math.PI / 2);
+        ctx.globalAlpha = 0.5 + 0.35 * Math.sin(e.t * 7);
+        neonStroke(ctx, c, 2, 12);
+        ctx.beginPath();
+        ctx.moveTo(0, -e.radius * 1.4);
+        ctx.lineTo(e.radius, e.radius);
+        ctx.lineTo(0, e.radius * 0.45);
+        ctx.lineTo(-e.radius, e.radius);
+        ctx.closePath();
+        ctx.stroke();
+        break;
+      case "leech":
+        // hexágono (masa de MADRE) + ojo + haz de anclaje
+        if (e.tether && W.player) {
+          var lba = NX.angleTo(e.x, e.y, W.player.x, W.player.y);
+          var lbd = Math.sqrt(NX.dist2(e.x, e.y, W.player.x, W.player.y));
+          ctx.save();
+          ctx.globalAlpha = 0.4 + 0.3 * Math.sin(e.t * 8);
+          neonStroke(ctx, c, 3, 14);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(lba) * lbd, Math.sin(lba) * lbd);
+          ctx.stroke();
+          ctx.restore();
+        }
+        neonStroke(ctx, c, 2.5, 12);
+        poly(ctx, 0, 0, e.radius, 6, e.t * 0.4);
+        ctx.stroke();
+        ctx.shadowBlur = 14; ctx.shadowColor = c;
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(0, 0, e.radius * (0.22 + 0.06 * Math.sin(e.t * 5)), 0, NX.TAU);
+        ctx.fill();
+        break;
+      case "echo_warden":
+        // mini-jefe: hexágono grande con doble anillo + ojo
+        var ewf = e.hp / e.hpMax;
+        neonStroke(ctx, c, 3, 20);
+        poly(ctx, 0, 0, e.radius, 6, e.t * 0.5);
+        ctx.stroke();
+        neonStroke(ctx, "#c7a4ff", 2, 12);
+        poly(ctx, 0, 0, e.radius * 0.66, 6, -e.t * 0.7);
+        ctx.stroke();
+        ctx.shadowBlur = 22; ctx.shadowColor = c;
+        ctx.fillStyle = ewf > 0.5 ? "#c7a4ff" : "#ff3b3b";
+        ctx.beginPath();
+        ctx.arc(0, 0, e.radius * (0.18 + 0.05 * Math.sin(e.t * 6)), 0, NX.TAU);
+        ctx.fill();
+        break;
+      case "vega_prime":
+        // la VEGA original: nave del jugador a gran escala, doble contorno violeta+blanco
+        ctx.save();
+        ctx.rotate(Math.atan2(e.vy, e.vx) + Math.PI / 2);
+        neonStroke(ctx, "#b388ff", 4, 18);
+        ctx.beginPath();
+        ctx.moveTo(0, -e.radius * 1.5);
+        ctx.lineTo(e.radius, e.radius * 1.1);
+        ctx.lineTo(0, e.radius * 0.5);
+        ctx.lineTo(-e.radius, e.radius * 1.1);
+        ctx.closePath();
+        ctx.stroke();
+        neonStroke(ctx, c, 2, 14);
+        ctx.stroke();
+        ctx.restore();
+        ctx.shadowBlur = 22; ctx.shadowColor = "#ff2bd6";
+        ctx.fillStyle = e.phase >= 1 ? "#ff2bd6" : "#f4f0ff";
+        ctx.beginPath();
+        ctx.arc(0, 0, e.radius * (0.16 + 0.06 * Math.sin(e.t * 5)), 0, NX.TAU);
+        ctx.fill();
         break;
       case "boss":
         // estructura giratoria de tres anillos + núcleo-ojo

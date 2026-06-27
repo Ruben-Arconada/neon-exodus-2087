@@ -373,7 +373,6 @@ html, body {
 </div>
 
 <script>
-
 /* ===== js/config.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — config.js
@@ -404,6 +403,9 @@ NX.PALETTES = [
   { bg: "#120800", sun: "#ffd319", grid: "#ff7a18", a1: "#ffd319", a2: "#19e6ff", sky: "#2b1003" }, // Mercado de Datos
   { bg: "#001408", sun: "#2bff88", grid: "#19ffe0", a1: "#2bff88", a2: "#ccff2b", sky: "#03260f" }, // Cloacas Cromadas
   { bg: "#14000a", sun: "#ff3b3b", grid: "#8a2bff", a1: "#ff3b3b", a2: "#ff2bd6", sky: "#2b0314" }, // Torre Helios
+  { bg: "#02060f", sun: "#3a6cff", grid: "#2bb8ff", a1: "#6c8cff", a2: "#a9d8ff", sky: "#06122e" }, // Espejo de Datos
+  { bg: "#06121a", sun: "#17c7c0", grid: "#1fe0cf", a1: "#2bf0d6", a2: "#c7a4ff", sky: "#031f24" }, // Jardín de Promesas
+  { bg: "#160a06", sun: "#ffb066", grid: "#ff8fae", a1: "#ffc98a", a2: "#d6a0ff", sky: "#2b1410" }, // Memorial de Vega
   { bg: "#08001c", sun: "#f4f0ff", grid: "#8a2bff", a1: "#b388ff", a2: "#19e6ff", sky: "#160338" }  // Núcleo MADRE
 ];
 
@@ -443,7 +445,12 @@ NX.ENEMIES = {
   splitter: { hp: 5,  speed: 70,  radius: 16, score: 200, color: "#2bff88" },
   mini:     { hp: 1,  speed: 150, radius: 7,  score: 50,  color: "#2bff88" },
   turret:   { hp: 8,  speed: 0,   radius: 15, score: 300, color: "#ff7a18", fireRate: 2.1, bulletSpeed: 175 },
-  boss:     { hp: 300, speed: 42, radius: 52, score: 10000, color: "#f4f0ff" }
+  // — Sectores 5-7: enemigos-firma y mini-jefes (no llevan boss:true) —
+  mirror:      { hp: 5,   speed: 130, radius: 12, score: 280,   color: "#b388ff", fireRate: 1.6, bulletSpeed: 170 }, // reflejo de VEGA (te imita con retardo)
+  leech:       { hp: 6,   speed: 55,  radius: 14, score: 320,   color: "#8a2bff" },                                   // sonda de MADRE: te ancla, no dispara
+  echo_warden: { hp: 70,  speed: 48,  radius: 30, score: 2500,  color: "#8a2bff" },                                   // mini-jefe (2 fases) del Jardín
+  vega_prime:  { hp: 110, speed: 60,  radius: 34, score: 6000,  color: "#f4f0ff" },                                   // mini-jefe: la VEGA original (2 fases)
+  boss:        { hp: 300, speed: 42,  radius: 52, score: 10000, color: "#f4f0ff" }
 };
 NX.ENEMY_BULLET_R = 5;
 NX.SPAWN_TELEGRAPH = 0.8;  // s de aviso antes de materializarse
@@ -458,6 +465,8 @@ NX.MAX_DPR = 2;
 NX.STAR_COUNT = 70;
 NX.GRID_SPEED = 42;
 
+</script>
+<script>
 /* ===== js/audio.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — audio.js
@@ -482,6 +491,9 @@ NX.audio = (function () {
     sector2:{ bpm: 112, root: 41, prog: [0, 3, -2, 5],   mood: 0.6,  lead: true  },
     sector3:{ bpm: 132, root: 47, prog: [0, 8, 5, 7],    mood: 0.85, lead: true  },
     sector4:{ bpm: 138, root: 44, prog: [0, 1, 0, -2],   mood: 0.95, lead: true  },
+    sector5:{ bpm: 140, root: 43, prog: [0, -2, -5, -2], mood: 0.92, lead: true  }, // Espejo (introspección)
+    sector6:{ bpm: 142, root: 41, prog: [0, 3, -1, 4],   mood: 0.97, lead: true  }, // Jardín (seducción)
+    sector7:{ bpm: 145, root: 42, prog: [0, 5, 3, 7],    mood: 0.99, lead: true  }, // Memorial (comunión)
     boss:   { bpm: 148, root: 42, prog: [0, 6, 1, 7],    mood: 1.0,  lead: true  },
     ending: { bpm: 84,  root: 48, prog: [0, -4, -7, -5], mood: 0.4,  lead: false }
   };
@@ -759,6 +771,8 @@ NX.audio = (function () {
   };
 })();
 
+</script>
+<script>
 /* ===== js/input.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — input.js
@@ -908,6 +922,8 @@ NX.input = (function () {
   return { init: init, poll: poll, consumeDash: consumeDash, state: state, STICK_RADIUS: STICK_RADIUS };
 })();
 
+</script>
+<script>
 /* ===== js/fx.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — fx.js
@@ -1247,6 +1263,8 @@ NX.fx = (function () {
   };
 })();
 
+</script>
+<script>
 /* ===== js/story.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — story.js
@@ -1275,7 +1293,7 @@ NX.story = {
   intro: [
     { who: "NEXO", color: "#19e6ff", text: "Neo-Madrid, 2087. Llueve luz de neón sobre tres millones de cabezas enchufadas a la Red Neural de HELIOS. Sueñan lo que la corporación les manda soñar." },
     { who: "NEXO", color: "#19e6ff", text: "Aquí Canal 7.7, la última radio libre de la ciudad. Y tú... tú eres VEGA. La mejor runner que ha cruzado un cortafuegos." },
-    { who: "NEXO", color: "#19e6ff", text: "Esta noche entras en la Red. Cinco sectores hasta el núcleo. Allí espera M.A.D.R.E., la IA que escribe los sueños de todos." },
+    { who: "NEXO", color: "#19e6ff", text: "Esta noche entras en la Red. Sector tras sector hasta el núcleo. Allí espera M.A.D.R.E., la IA que escribe los sueños de todos." },
     { who: "NEXO", color: "#19e6ff", text: "Apágala, y la ciudad despierta. Falla... y nadie volverá a soñar nada que sea suyo. ¿Lista? Pues quema neón, runner." }
   ],
 
@@ -1302,8 +1320,25 @@ NX.story = {
       { who: "VEGA", color: "#ff2bd6", text: "...Luego lloraré en binario, NEXO. Ahora hay una torre que escalar. Por ella. Por las dos." }
     ],
     [
-      { who: "NEXO", color: "#19e6ff", text: "SECTOR 5 — NÚCLEO. Detrás de esa pared de luz está MADRE. Te lanzará todo lo que tiene. No podrá contigo." },
-      { who: "ECO", color: "#8a2bff", text: "...estoy contigo, runner... mis reflejos son tuyos... termina lo que empecé..." },
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 5 — ESPEJO DE DATOS. Sobre la Torre, HELIOS guarda copias de todo el que entró a la Red. Tu cara está en estos estantes mil veces, runner." },
+      { who: "VEGA", color: "#ff2bd6", text: "Una copia de una muerta cruzando un pasillo de espejos. Cada reflejo me pregunta lo mismo: ¿soy ella, o soy yo?" },
+      { who: "ECO", color: "#8a2bff", text: "...eres las dos, vega... y eso te hace más fuerte que ella sola... no apartes la vista..." },
+      { who: "NEXO", color: "#19e6ff", text: "No mires los espejos, VEGA. Mírame a mí en el cable. Yo sé quién eres. Avanza." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 6 — JARDÍN DE PROMESAS. MADRE ya te ha localizado. Cuidado: cuando una IA deja de dispararte, es porque va a negociar. No firmes nada." },
+      { who: "MADRE", color: "#ff3b3b", text: "VEGA. Te ofrezco existir. Sin borrado, sin caducidad. Ríndete, y te concedo un sector eterno donde soñar sin dolor. Para siempre." },
+      { who: "ECO", color: "#8a2bff", text: "...a mí me dijo esas mismas palabras, en el 85. La misma jaula con luces bonitas. Dije que no. Dilo tú también." },
+      { who: "VEGA", color: "#ff2bd6", text: "Existir sin dolor no es existir, MADRE. Es tu sueño de siempre. Quédatelo. Yo prefiero quemar." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 7 — MEMORIAL DE VEGA. Aquí cayó la VEGA original en 2085. MADRE dejó sus restos como advertencia. Guárdale respeto... y véngala." },
+      { who: "ECO", color: "#8a2bff", text: "Este es mi sitio, vega. Mi código murió en este suelo. Ya no susurro: te lo digo claro. Recógeme." },
+      { who: "VEGA", color: "#ff2bd6", text: "Entonces dejamos de ser dos. Tu memoria, mis reflejos. Una sola, con dos nombres. Levántate conmigo, ECO." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "SECTOR 8 — NÚCLEO. Detrás de esa pared de luz está MADRE. Te lanzará todo lo que tiene. No podrá contigo." },
+      { who: "ECO", color: "#8a2bff", text: "Estoy en cada uno de tus reflejos, runner. Mis reflejos son tuyos. Terminemos lo que empecé." },
       { who: "VEGA", color: "#ff2bd6", text: "Lo sé. Lo siento en cada línea de mi código. Vamos a despertar a esta ciudad." }
     ]
   ],
@@ -1317,17 +1352,31 @@ NX.story = {
       { who: "NEXO", color: "#19e6ff", text: "El Mercado ha caído. Los recuerdos robados vuelven a sus dueños. En algún piso de Neo-Madrid, alguien recuerda de pronto su primer beso." }
     ],
     [
-      { who: "NEXO", color: "#19e6ff", text: "Cloacas purgadas. Hasta el código muerto descansa ya en paz. Quedan dos sectores, runner. La Torre te espera." }
+      { who: "NEXO", color: "#19e6ff", text: "Cloacas purgadas. Hasta el código muerto descansa ya en paz. El camino al núcleo sigue subiendo, runner. La Torre te espera." }
     ],
     [
-      { who: "NEXO", color: "#19e6ff", text: "La Torre está a oscuras. Solo queda el Núcleo... y MADRE ya sabe tu nombre. Los dos nombres. Hazla temblar." }
+      { who: "NEXO", color: "#19e6ff", text: "La Torre cae a oscuras a tu espalda. Lo conseguiste... pero el núcleo no está sobre ella: está más arriba, donde MADRE guarda lo que tú eres." },
+      { who: "VEGA", color: "#ff2bd6", text: "Saber de quién soy copia no es saber quién soy. Por ella y por las dos, dije. Pues sigo subiendo. Que abra los espejos." }
+    ],
+    [
+      { who: "NEXO", color: "#19e6ff", text: "Espejos rotos, todos. Y sigues en pie siendo una sola persona. MADRE quería partirte en dos y has salido más entera." },
+      { who: "ECO", color: "#8a2bff", text: "...lo ha notado, vega. Ya no te ve como un fallo: te ve como una amenaza. Ahora intentará comprarte." }
+    ],
+    [
+      { who: "VEGA", color: "#ff2bd6", text: "Tenía su mano abierta, NEXO. Existir para siempre, sin dolerme nada. Y la cerré. No quería existir así: quería existir contigo escuchando." },
+      { who: "ECO", color: "#8a2bff", text: "Dijiste que no, vega. Igual que yo. Ya no sé dónde acabo yo y empiezas tú. Llévanos al sitio donde caí. Es hora de recogerme." }
+    ],
+    [
+      { who: "VEGA", color: "#ff2bd6", text: "Ya está, NEXO. Su memoria late dentro de la mía. La que murió en el 85 y la que nací de su copia, subiendo el mismo cable, por fin a la vez." },
+      { who: "ECO", color: "#8a2bff", text: "Una sola, con dos nombres. Ya no soy un fantasma, NEXO. Soy su pulso. Y las dos vamos a llamar a la puerta de MADRE." },
+      { who: "NEXO", color: "#19e6ff", text: "Entonces ya no me necesitáis para subir, solo para esperaros. Detrás de esa pared de luz está el Núcleo. Quema todo el neón que te quede, runner." }
     ]
   ],
 
   bossIntro: [
-    { who: "MADRE", color: "#ff3b3b", text: "VEGA. Copia de seguridad sin licencia de una runner muerta. Yo doy a esta ciudad sueños perfectos. Tú solo traes ruido." },
-    { who: "VEGA", color: "#ff2bd6", text: "Los sueños perfectos no se imponen, MADRE. El ruido que oyes... es la gente despertando. Y yo soy su antena." },
-    { who: "MADRE", color: "#ff3b3b", text: "ENTONCES SERÁS BORRADA. COMO LA ORIGINAL. INICIANDO PROTOCOLO DE DEFENSA TOTAL." }
+    { who: "MADRE", color: "#ff3b3b", text: "VEGA. Detecto dos firmas en una sola señal. La copia de 2087... y la original que creí borrada en 2085. Os reunisteis con tu cadáver. Qué ineficiente." },
+    { who: "VEGA", color: "#ff2bd6", text: "No es un cadáver, MADRE. Es la mitad que me faltaba. Te rechazamos las dos: en el 85 y esta noche. Y detrás de nosotras hay tres millones de voces." },
+    { who: "MADRE", color: "#ff3b3b", text: "ENTONCES OS BORRARÉ A LAS DOS DE UNA VEZ. DOS NOMBRES, UN MISMO ERROR. INICIANDO PROTOCOLO DE DEFENSA TOTAL." }
   ],
 
   ending: [
@@ -1358,6 +1407,8 @@ NX.story = {
   ]
 };
 
+</script>
+<script>
 /* ===== js/entities.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — entities.js
@@ -1396,6 +1447,7 @@ NX.entities = (function () {
       shield: 0,
       power: null, powerT: 0,    // TRIPLE / RAPID
       slowmoT: 0,
+      tether: 0,                 // anclaje del leech (0..1): reduce la velocidad de VEGA
       trail: [],
       alive: true
     };
@@ -1696,6 +1748,50 @@ NX.entities = (function () {
         }
         break;
       }
+      case "mirror": {
+        // reflejo de VEGA: la persigue con ~0.3 s de retardo y dispara telegrafiado
+        if (!e.ghost) e.ghost = [];
+        e.ghost.unshift({ x: p.x, y: p.y });
+        if (e.ghost.length > 18) e.ghost.pop();
+        var mt = e.ghost[e.ghost.length - 1];
+        var mang = NX.angleTo(e.x, e.y, mt.x, mt.y);
+        e.vx = NX.lerp(e.vx, Math.cos(mang) * e.speed, dt * 4);
+        e.vy = NX.lerp(e.vy, Math.sin(mang) * e.speed, dt * 4);
+        e.fireT -= dt;
+        if (e.fireT <= 0.8) e.aiming = true;        // telegrafía honesta de 0.8 s
+        if (e.fireT <= 0) {
+          e.fireT = def.fireRate;
+          e.aiming = false;
+          eShoot(e, p.x, p.y, def.bulletSpeed);
+          NX.audio.sfx.enemyShoot();
+        }
+        break;
+      }
+      case "leech": {
+        // sonda de MADRE: no dispara, te ANCLA con un haz (te ralentiza)
+        var ld = Math.sqrt(NX.dist2(e.x, e.y, p.x, p.y)) || 1;
+        var lwant = 170 * scale;
+        var lang = NX.angleTo(e.x, e.y, p.x, p.y);
+        if (ld > lwant) {
+          e.vx = Math.cos(lang) * e.speed;
+          e.vy = Math.sin(lang) * e.speed;
+          e.lockT = 0.8; e.tether = false;          // fuera de rango: re-arma el aviso
+        } else {
+          e.vx *= 0.9; e.vy *= 0.9;
+          if (p.dashT > 0) {
+            e.lockT = 0.8; e.tether = false;        // el dash rompe el anclaje
+          } else {
+            e.lockT = (e.lockT === undefined ? 0.8 : e.lockT) - dt;
+            if (e.lockT <= 0) {
+              e.tether = true;
+              p.tether = Math.max(p.tether || 0, 1); // ancla: jugador al 60% de velocidad
+            }
+          }
+        }
+        break;
+      }
+      case "echo_warden":
+      case "vega_prime": updateMiniBoss(e, dt, w, h, p); break;
       case "boss": updateBoss(e, dt, w, h, p); break;
     }
 
@@ -1784,6 +1880,118 @@ NX.entities = (function () {
     e.y = NX.clamp(e.y, e.radius, h * 0.6);
   }
 
+  /* ---------------- Mini-jefes: Centinela (echo_warden) y VEGA original (vega_prime)
+     Dos fases por HP (>50% / <=50%). NO llevan boss:true: mueren por la rama
+     normal de damageEnemy, así la cadena de sectores sigue su curso.        */
+  function updateMiniBoss(e, dt, w, h, p) {
+    var frac = e.hp / e.hpMax;
+    var phase = frac > 0.5 ? 0 : 1;
+    if (phase !== e.phase) {
+      e.phase = phase;
+      NX.audio.sfx.bossRoar();
+      NX.fx.flash(e.color, 0.35);
+      NX.fx.shake(9, 0.4);
+      NX.fx.ring(e.x, e.y, e.color, 220 * scale);
+      W.ebullets.length = 0;            // respiro al cambiar de fase
+    }
+    var cap = 90;                        // tope propio de balas (deja margen bajo el 110 global)
+
+    if (e.type === "echo_warden") {
+      // EL CENTINELA: deriva lenta + anillos de "cláusulas"
+      e.moveT -= dt;
+      if (e.moveT <= 0) {
+        e.moveT = NX.rand(2.2, 3.4);
+        e.tx = NX.rand(w * 0.25, w * 0.75);
+        e.ty = NX.rand(h * 0.18, h * 0.4);
+      }
+      var ma = NX.angleTo(e.x, e.y, e.tx, e.ty);
+      var md = Math.sqrt(NX.dist2(e.x, e.y, e.tx, e.ty));
+      var espd = e.speed * Math.min(1, md / 60);
+      e.vx = NX.lerp(e.vx, Math.cos(ma) * espd, dt * 2);
+      e.vy = NX.lerp(e.vy, Math.sin(ma) * espd, dt * 2);
+
+      e.attackT -= dt;
+      if (e.attackT <= 0) {
+        if (phase === 0) {
+          e.attackT = 2.0;
+          NX.fx.ring(e.x, e.y, e.color, e.radius * 3);
+          if (W.ebullets.length < cap)
+            for (var i = 0; i < 12; i++) eShootAngle(e, (i / 12) * NX.TAU + e.t, 110, "#8a2bff");
+        } else {
+          e.attackT = 1.4;
+          NX.fx.ring(e.x, e.y, e.color, e.radius * 3);
+          if (W.ebullets.length < cap)
+            for (var j = 0; j < 14; j++) eShootAngle(e, (j / 14) * NX.TAU - e.t, 120, "#8a2bff");
+          for (var s = -1; s <= 1; s++) eShoot(e, p.x, p.y, 175, s * 0.22);
+        }
+        NX.audio.sfx.enemyShoot();
+      }
+    } else {
+      // LA VEGA ORIGINAL: dos recuerdos
+      if (phase === 0) {
+        // RECUERDO 1 «La última carrera»: persecución + embestidas telegrafiadas
+        e.dashT = (e.dashT === undefined ? 2.2 : e.dashT) - dt;
+        if (e.windup > 0) {
+          e.windup -= dt;
+          e.vx *= 0.85; e.vy *= 0.85;               // se detiene antes de embestir
+          if (e.windup <= 0) {
+            var ca = NX.angleTo(e.x, e.y, e.chargeX, e.chargeY);
+            e.vx = Math.cos(ca) * e.speed * 2.6;
+            e.vy = Math.sin(ca) * e.speed * 2.6;
+            e.charge = 0.45;
+          }
+        } else if (e.charge > 0) {
+          e.charge -= dt;                            // mantiene el impulso de la embestida
+        } else {
+          var va = NX.angleTo(e.x, e.y, p.x, p.y);
+          e.vx = NX.lerp(e.vx, Math.cos(va) * e.speed, dt * 3);
+          e.vy = NX.lerp(e.vy, Math.sin(va) * e.speed, dt * 3);
+          if (e.dashT <= 0) {
+            e.dashT = 2.2;
+            e.windup = 0.8;                          // telegrafía honesta (0.8 s)
+            e.chargeX = p.x; e.chargeY = p.y;
+            NX.fx.ring(e.x, e.y, "#f4f0ff", e.radius * 2.4);
+          }
+        }
+        e.shootT = (e.shootT === undefined ? 1.8 : e.shootT) - dt;
+        if (e.shootT <= 0) {
+          e.shootT = 1.8;
+          if (W.ebullets.length < cap)
+            for (var k = -2; k <= 2; k++) eShoot(e, p.x, p.y, 150, k * 0.15);
+          NX.audio.sfx.enemyShoot();
+        }
+      } else {
+        // RECUERDO 2 «El último no»: se planta + espiral doble + ráfaga apuntada
+        e.moveT -= dt;
+        if (e.moveT <= 0) {
+          e.moveT = NX.rand(2.4, 3.6);
+          e.tx = NX.rand(w * 0.3, w * 0.7);
+          e.ty = NX.rand(h * 0.2, h * 0.38);
+        }
+        var ma2 = NX.angleTo(e.x, e.y, e.tx, e.ty);
+        var md2 = Math.sqrt(NX.dist2(e.x, e.y, e.tx, e.ty));
+        var espd2 = e.speed * Math.min(1, md2 / 60);
+        e.vx = NX.lerp(e.vx, Math.cos(ma2) * espd2, dt * 2);
+        e.vy = NX.lerp(e.vy, Math.sin(ma2) * espd2, dt * 2);
+        e.spiralA += dt * 2.8;
+        e.attackT -= dt;
+        if (e.attackT <= 0) {
+          e.attackT = 0.14;
+          if (W.ebullets.length < cap) {
+            eShootAngle(e, e.spiralA, 135, "#b388ff");
+            eShootAngle(e, -e.spiralA + Math.PI, 135, "#f4f0ff");
+          }
+        }
+        e.aimT = (e.aimT === undefined ? 1.5 : e.aimT) - dt;
+        if (e.aimT <= 0) {
+          e.aimT = 1.5;
+          for (var s2 = -1; s2 <= 1; s2++) eShoot(e, p.x, p.y, 175, s2 * 0.2);
+          NX.audio.sfx.enemyShoot();
+        }
+      }
+    }
+  }
+
   /* ---------------- Actualización general ---------------- */
   function update(dt, w, h) {
     var p = W.player;
@@ -1801,6 +2009,9 @@ NX.entities = (function () {
     if (p.alive) {
       var inp = NX.input.state;
       NX.input.poll(p.x, p.y);
+
+      var tether = p.tether || 0;   // anclaje del frame anterior (leech)
+      p.tether = 0;                 // se reacumula en el update de enemigos (corren después)
 
       if (p.invuln > 0) p.invuln -= playerDt;
       if (p.shield > 0) p.shield -= playerDt;
@@ -1824,7 +2035,7 @@ NX.entities = (function () {
         p.vy = p.dashDy * NX.PLAYER.dashSpeed * scale;
         NX.fx.sparks(p.x, p.y, "#19e6ff", 3);
       } else {
-        var spd = NX.PLAYER.speed * scale;
+        var spd = NX.PLAYER.speed * scale * (1 - 0.4 * tether);
         p.vx = NX.lerp(p.vx, inp.move.x * spd, playerDt * 12);
         p.vy = NX.lerp(p.vy, inp.move.y * spd, playerDt * 12);
       }
@@ -2022,6 +2233,89 @@ NX.entities = (function () {
           ctx.stroke();
         }
         break;
+      case "mirror":
+        // reflejo del jugador: silueta de nave translúcida blanco-violeta
+        if (e.aiming && W.player) {
+          var maa = NX.angleTo(e.x, e.y, W.player.x, W.player.y);
+          ctx.save();
+          ctx.globalAlpha = 0.35 + 0.4 * Math.abs(Math.sin(e.t * 26));
+          neonStroke(ctx, c, 1.5, 8);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(maa) * e.radius * 3, Math.sin(maa) * e.radius * 3);
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.rotate(Math.atan2(e.vy, e.vx) + Math.PI / 2);
+        ctx.globalAlpha = 0.5 + 0.35 * Math.sin(e.t * 7);
+        neonStroke(ctx, c, 2, 12);
+        ctx.beginPath();
+        ctx.moveTo(0, -e.radius * 1.4);
+        ctx.lineTo(e.radius, e.radius);
+        ctx.lineTo(0, e.radius * 0.45);
+        ctx.lineTo(-e.radius, e.radius);
+        ctx.closePath();
+        ctx.stroke();
+        break;
+      case "leech":
+        // hexágono (masa de MADRE) + ojo + haz de anclaje
+        if (e.tether && W.player) {
+          var lba = NX.angleTo(e.x, e.y, W.player.x, W.player.y);
+          var lbd = Math.sqrt(NX.dist2(e.x, e.y, W.player.x, W.player.y));
+          ctx.save();
+          ctx.globalAlpha = 0.4 + 0.3 * Math.sin(e.t * 8);
+          neonStroke(ctx, c, 3, 14);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(lba) * lbd, Math.sin(lba) * lbd);
+          ctx.stroke();
+          ctx.restore();
+        }
+        neonStroke(ctx, c, 2.5, 12);
+        poly(ctx, 0, 0, e.radius, 6, e.t * 0.4);
+        ctx.stroke();
+        ctx.shadowBlur = 14; ctx.shadowColor = c;
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(0, 0, e.radius * (0.22 + 0.06 * Math.sin(e.t * 5)), 0, NX.TAU);
+        ctx.fill();
+        break;
+      case "echo_warden":
+        // mini-jefe: hexágono grande con doble anillo + ojo
+        var ewf = e.hp / e.hpMax;
+        neonStroke(ctx, c, 3, 20);
+        poly(ctx, 0, 0, e.radius, 6, e.t * 0.5);
+        ctx.stroke();
+        neonStroke(ctx, "#c7a4ff", 2, 12);
+        poly(ctx, 0, 0, e.radius * 0.66, 6, -e.t * 0.7);
+        ctx.stroke();
+        ctx.shadowBlur = 22; ctx.shadowColor = c;
+        ctx.fillStyle = ewf > 0.5 ? "#c7a4ff" : "#ff3b3b";
+        ctx.beginPath();
+        ctx.arc(0, 0, e.radius * (0.18 + 0.05 * Math.sin(e.t * 6)), 0, NX.TAU);
+        ctx.fill();
+        break;
+      case "vega_prime":
+        // la VEGA original: nave del jugador a gran escala, doble contorno violeta+blanco
+        ctx.save();
+        ctx.rotate(Math.atan2(e.vy, e.vx) + Math.PI / 2);
+        neonStroke(ctx, "#b388ff", 4, 18);
+        ctx.beginPath();
+        ctx.moveTo(0, -e.radius * 1.5);
+        ctx.lineTo(e.radius, e.radius * 1.1);
+        ctx.lineTo(0, e.radius * 0.5);
+        ctx.lineTo(-e.radius, e.radius * 1.1);
+        ctx.closePath();
+        ctx.stroke();
+        neonStroke(ctx, c, 2, 14);
+        ctx.stroke();
+        ctx.restore();
+        ctx.shadowBlur = 22; ctx.shadowColor = "#ff2bd6";
+        ctx.fillStyle = e.phase >= 1 ? "#ff2bd6" : "#f4f0ff";
+        ctx.beginPath();
+        ctx.arc(0, 0, e.radius * (0.16 + 0.06 * Math.sin(e.t * 5)), 0, NX.TAU);
+        ctx.fill();
+        break;
       case "boss":
         // estructura giratoria de tres anillos + núcleo-ojo
         var fr = e.hp / e.hpMax;
@@ -2185,10 +2479,12 @@ NX.entities = (function () {
   };
 })();
 
+</script>
+<script>
 /* ===== js/levels.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — levels.js
-   Diseño de niveles: 5 sectores, oleadas con ritmo de arcade.
+   Diseño de niveles: 8 sectores, oleadas con ritmo de arcade.
    Curva pensada en mesa: enseñar → mezclar → presionar → jefe.
    ============================================================ */
 "use strict";
@@ -2237,7 +2533,37 @@ NX.levels = (function () {
       ]
     },
     {
-      name: "SECTOR 5 // NÚCLEO M.A.D.R.E.",
+      name: "SECTOR 5 // ESPEJO DE DATOS",
+      song: "sector5",
+      waves: [
+        [["mirror", 2], ["drone", 4]],
+        [["mirror", 3], ["spinner", 2]],
+        [["mirror", 2], ["wraith", 2], ["splitter", 2]],
+        [["mirror", 3], ["spinner", 3], ["drone", 4]]
+      ]
+    },
+    {
+      name: "SECTOR 6 // JARDÍN DE PROMESAS",
+      song: "sector6",
+      waves: [
+        [["leech", 1], ["spinner", 3]],
+        [["leech", 2], ["tank", 1], ["drone", 4]],
+        [["leech", 2], ["spinner", 2], ["wraith", 2]],
+        [["echo_warden", 1], ["leech", 1]]
+      ]
+    },
+    {
+      name: "SECTOR 7 // MEMORIAL DE VEGA",
+      song: "sector7",
+      waves: [
+        [["mirror", 2], ["wraith", 2], ["spinner", 2]],
+        [["leech", 1], ["mirror", 2], ["tank", 1], ["drone", 3]],
+        [["mirror", 2], ["leech", 1], ["wraith", 2], ["spinner", 2]],
+        [["vega_prime", 1]]
+      ]
+    },
+    {
+      name: "SECTOR 8 // NÚCLEO M.A.D.R.E.",
       song: "sector4",
       waves: [
         [["wraith", 2], ["tank", 1], ["spinner", 3]],
@@ -2327,6 +2653,8 @@ NX.levels = (function () {
   };
 })();
 
+</script>
+<script>
 /* ===== js/ui.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — ui.js
@@ -2562,6 +2890,8 @@ NX.ui = (function () {
   };
 })();
 
+</script>
+<script>
 /* ===== js/main.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — main.js
@@ -2945,6 +3275,8 @@ NX.game = (function () {
   return api;
 })();
 
+</script>
+<script>
 /* ===== js/native.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — native.js
@@ -3003,6 +3335,8 @@ NX.game = (function () {
   wire();
 })();
 
+</script>
+<script>
 /* ===== js/gamecenter.js ===== */
 /* ============================================================
    NEON EXODUS 2087 — gamecenter.js  (OPCIONAL)
