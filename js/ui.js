@@ -195,6 +195,19 @@ NX.ui = (function () {
     document.body.classList.toggle("no-crt", !s.crt);
   }
 
+  /* ---------- Opinión / valoración ----------
+     Pre-lanzamiento (y en la web): recoge la opinión por email, sin que la app
+     trate ningún dato. Cuando esté en tiendas, repunta esto a la valoración de
+     App Store / Google Play (o un plugin de in-app review). */
+  function openFeedback() {
+    var subject = "Opinión sobre NEON EXODUS 2087";
+    var body = "¡Acabo de pasarme NEON EXODUS 2087!\n\n" +
+      "Lo que más me ha gustado:\n\nQué mejoraría:\n\nQué me gustaría ver en próximas misiones / la colección:\n";
+    var url = "mailto:jackito777@gmail.com?subject=" +
+      encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    try { window.location.href = url; } catch (e) {}
+  }
+
   /* ---------- Enlaces de botones ---------- */
   function bind() {
     buildCredits();
@@ -235,6 +248,8 @@ NX.ui = (function () {
 
     on("go-retry", function () { NX.game.retrySector(); });
     on("go-title", function () { NX.game.quitToTitle(); });
+    on("v-replay", function () { NX.game.newRun(); });
+    on("v-rate", function () { openFeedback(); });
     on("v-credits", function () { show("screen-credits"); });
     on("v-title", function () { NX.game.quitToTitle(); });
 
