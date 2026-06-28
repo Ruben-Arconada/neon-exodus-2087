@@ -231,3 +231,7 @@ Pasos manuales que quedan (no automatizables desde aquí):
 - **DECISIÓN pendiente del usuario:**
   - (a) **Lanzar NEON ya** en la cuenta individual de Apple (rápido; aparece tu nombre personal en la App Store), o
   - (b) **Tramitar D-U-N-S / cuenta Organización** de Apple antes de publicar en iOS (coherencia de marca de cara a la colección). El D-U-N-S se puede ir pidiendo **en paralelo** (es gratis) sin frenar Android.
+- **Cómo funciona el cambio individual → organización (NO es automático):**
+  - No se puede "convertir" la cuenta individual en organización. Se crea una cuenta de **Organización NUEVA** (Apple ID/Team aparte, con su D-U-N-S).
+  - Para llevar NEON a esa organización hay que hacer una **Transferencia de app (App Transfer)** en App Store Connect: es **manual** y tiene condiciones (la app debe tener al menos una versión publicada, sin ciertas capacidades/entitlements problemáticos, ambas cuentas en regla y la receptora acepta). **Conserva el mismo bundle id** (`com.clickcomun.neonexodus`) **y las reseñas/valoraciones**.
+  - Conclusión: lanzar ahora en individual **no es un callejón sin salida** (es transferible después), pero es un trámite, no un interruptor. Si la marca importa desde el día 1, sale más cómodo tener la organización **antes** de publicar.
