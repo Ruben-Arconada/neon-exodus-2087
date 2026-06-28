@@ -218,3 +218,16 @@ Pasos manuales que quedan (no automatizables desde aquí):
 - [ ] Fijar el id permanente `com.clickcomun.<coleccion>` antes de crear la app de la colección.
 
 **Incertidumbres:** sin analítica (por privacidad) el embudo solo se mide por proxies (instalaciones/ventas/reseñas); los netos son aproximados (el IVA varía por país UE).
+
+**Precio CONFIRMADO (2026-06-28):** NEON EXODUS = **gratis** (acordado con el usuario).
+
+---
+
+## 14. Cuentas y nombre de editor (2026-06-28)
+
+- **Apple: cuenta INDIVIDUAL** (Team `E446EVZA4R`, "Ruben Martínez Arconada"). ⚠️ Implicación: en la App Store el **vendedor/desarrollador se muestra con el NOMBRE PERSONAL**, no "Click Comunicación". Para mostrar la marca haría falta una **cuenta de Organización** de Apple (requiere número **D-U-N-S** gratuito + verificación, tarda días/semanas). El **Small Business Program (15%)** SÍ está disponible para cuentas individuales.
+- **Google Play: Click Comunicación** (cuenta de empresa) → ahí el editor SÍ sale como la marca.
+- **Consecuencia de marca:** si NEON sale en la cuenta individual de Apple y la colección bajo Click Comunicación, habría **dos nombres de editor distintos** entre apps/tiendas. Para coherencia, lo ideal sería una cuenta de **Organización de Apple para todo**. Mover una app de individual → organización después es posible (transferencia de app) pero con fricción.
+- **DECISIÓN pendiente del usuario:**
+  - (a) **Lanzar NEON ya** en la cuenta individual de Apple (rápido; aparece tu nombre personal en la App Store), o
+  - (b) **Tramitar D-U-N-S / cuenta Organización** de Apple antes de publicar en iOS (coherencia de marca de cara a la colección). El D-U-N-S se puede ir pidiendo **en paralelo** (es gratis) sin frenar Android.
