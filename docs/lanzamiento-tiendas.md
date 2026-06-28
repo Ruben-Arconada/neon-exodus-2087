@@ -192,7 +192,9 @@ Pasos manuales que quedan (no automatizables desde aquí):
 
 **Monetización (recomendación):** mantener el sello **sin anuncios y sin datos** (es vuestra mayor fortaleza y aprueba rápido). Opción preferida: **gratis con 1–2 mini-juegos de muestra + 1 compra única barata** (p. ej. 2,99 €) que desbloquea toda la colección. Alternativa: de pago directo barato. Evitar ads/analítica en v1 (rompería el "App Privacy = sin datos").
 
-**Impacto en este lanzamiento (DECISIÓN pendiente del usuario):**
-- ¿Publicamos **NEON EXODUS en solitario ya** (como está, flagship) y montamos la colección después? **o**
-- ¿Esperamos y publicamos directamente **la colección** (NEON EXODUS dentro)?
-- Si se va a la colección, el **id de tienda** será el de la colección (p. ej. `com.clickcomun.<colección>`), no `com.clickcomun.neonexodus`; este último quedaría como id interno del módulo. Conviene fijar el nombre/id de la colección **antes** de crear la app en cada consola (el id es permanente).
+**Impacto en este lanzamiento — DECISIÓN TOMADA (2026-06-28):**
+- ✅ **Se publica NEON EXODUS en SOLITARIO ya**, como está (flagship independiente), conservando su id `com.clickcomun.neonexodus`. Empezamos a aprender/recoger reseñas/crear público sin esperar a la colección.
+- Más adelante **la colección incluirá este juego**, y NEON EXODUS hará de **gancho/escaparate**: cuando la colección exista, se añade (en una actualización) una llamada **discreta** desde el propio juego — entrada "MÁS JUEGOS · COLECCIÓN" en el menú de título y/o un teaser tras la victoria — que **abra la ficha de la colección en la tienda**.
+- La colección tendrá **su propio id** (`com.clickcomun.<colección>`), independiente del de NEON. Fijar ese nombre/id antes de crear esa app (es permanente).
+- Modelo sugerido: **NEON gratis** (gancho) → **colección de pago** barata. El flagship gratis es el mejor anuncio de la colección, y valida la temática/audiencia antes de invertir en muchos juegos.
+- **Importante (anti-4.2 / offline):** esa llamada debe **abrir la URL de la tienda EXTERNAMENTE** (Capacitor Browser / `window.open`), nunca cargar contenido remoto dentro del juego, para no romper el "100% offline / sin datos". Se añade cuando la colección esté publicada, no ahora.
