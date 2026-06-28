@@ -40,6 +40,10 @@ NX.game = (function () {
     } catch (e) { /* sin persistencia */ }
   }
 
+  // Onboarding: recuerda si el jugador ya ha visto los consejos iniciales
+  function onboarded() { try { return localStorage.getItem("nx_onboarded") === "1"; } catch (e) { return false; } }
+  function setOnboarded() { try { localStorage.setItem("nx_onboarded", "1"); } catch (e) {} }
+
   function applySettings() {
     NX.audio.setMusic(settings.music);
     NX.audio.setSfx(settings.sfx);
@@ -108,6 +112,15 @@ NX.game = (function () {
     NX.ui.setHP(1);
     NX.audio.playSong(NX.levels.current().song);
     state = "play";
+
+    // Onboarding suave: solo la 1ª vez que se juega, durante el Sector 1.
+    // Reutiliza el texto flotante existente; no bloquea el control.
+    if (idx === 0 && !onboarded()) {
+      setOnboarded();
+      later(1100, function () { if (state === "play") NX.fx.textPop(W * 0.5, H * 0.40, "MUEVE con el pulgar izquierdo", "#19e6ff", false); });
+      later(3300, function () { if (state === "play") NX.fx.textPop(W * 0.5, H * 0.40, "DOBLE TOQUE = DASH para esquivar", "#ffd319", false); });
+      later(5500, function () { if (state === "play") NX.fx.textPop(W * 0.5, H * 0.40, "Disparas solo: sobrevive y encadena combos", "#ff2bd6", false); });
+    }
   }
 
   function nextSector() {
