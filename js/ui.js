@@ -22,30 +22,60 @@ NX.ui = (function () {
 
   function showHud(on) { $("hud").classList.toggle("hidden", !on); }
 
-  /* ---------- Secuencia de arranque ---------- */
+  /* ---------- Secuencia de arranque (terminal ochentero) ----------
+     El audio del navegador/iOS no suena hasta el primer gesto, así que el
+     terminal aparece "apagado": al tocar se ENCIENDE (sonido) y el texto se
+     teclea con blips estilo Fallout; luego conecta solo (o al tocar). */
   function bootSequence(onDone) {
     show("screen-boot");
     var el = $("boot-text");
-    el.textContent = "";
-    var lines = NX.story.boot;
-    var li = 0, done = false;
+    var fullText = NX.story.boot.join("\n") + "\n";
+    var phase = 0;            // 0 apagado · 1 encendiendo/tecleando · 2 listo
+    var charTimer = null, t1 = null, t2 = null, proceeded = false;
 
-    function nextLine() {
-      if (li >= lines.length) { done = true; return; }
-      el.textContent += lines[li] + "\n";
-      li++;
-      setTimeout(nextLine, li >= lines.length - 1 ? 400 : NX.rand(120, 380));
-    }
-    nextLine();
+    el.textContent = "\n  VEGA-OS  ·  TERMINAL 7//7\n\n  ▶ TOCA PARA ENCENDER ◀\n\n  ▮";
 
-    function go() {
-      $("screen-boot").removeEventListener("pointerdown", go);
-      window.removeEventListener("keydown", goKey);
+    function clearTimers() { clearInterval(charTimer); clearTimeout(t1); clearTimeout(t2); }
+
+    function proceed() {
+      if (proceeded) return;
+      proceeded = true;
+      clearTimers();
+      $("screen-boot").removeEventListener("pointerdown", onGesture);
+      window.removeEventListener("keydown", onKey);
       onDone();
     }
-    function goKey(e) { if (!e.repeat) go(); }
-    $("screen-boot").addEventListener("pointerdown", go);
-    window.addEventListener("keydown", goKey);
+    function showAll() {
+      clearTimers();
+      el.textContent = fullText;
+      phase = 2;
+      t2 = setTimeout(proceed, 1600);   // conecta solo tras un momento (o toca para entrar ya)
+    }
+    function startTyping() {
+      el.textContent = "";
+      var i = 0;
+      charTimer = setInterval(function () {
+        i++;
+        el.textContent = fullText.slice(0, i);
+        var ch = fullText.charAt(i - 1);
+        if (ch && ch !== " " && ch !== "\n" && (i % 2 === 0)) NX.audio.sfx.terminalTick();
+        if (i >= fullText.length) showAll();
+      }, 14);
+    }
+    function onGesture() {
+      if (phase === 0) {                 // encender
+        phase = 1;
+        NX.audio.unlock();
+        NX.audio.sfx.terminalOn();
+        t1 = setTimeout(startTyping, 650);
+        return;
+      }
+      if (phase === 1) { showAll(); return; }   // saltar el tecleo
+      proceed();                                  // conectar
+    }
+    function onKey(e) { if (!e.repeat) onGesture(); }
+    $("screen-boot").addEventListener("pointerdown", onGesture);
+    window.addEventListener("keydown", onKey);
   }
 
   /* ---------- Terminal narrativo ---------- */

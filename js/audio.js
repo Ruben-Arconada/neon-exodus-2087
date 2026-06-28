@@ -375,6 +375,37 @@ NX.audio = (function () {
     spawn: function () { blip(60, 300, 0.25, "sine", 0.07); },
     ui: function () { blip(660, 880, 0.05, "square", 0.1); },
     typeTick: function () { blip(990, 880, 0.018, "square", 0.025); },
+    // Tecleo de terminal antiguo (arranque): clic corto con pitch variable
+    terminalTick: function () {
+      if (!ctx || !sfxOn) return;
+      var f = 360 + Math.random() * 240;
+      blip(f, f * 0.7, 0.02, "square", 0.05);
+    },
+    // Encendido de terminal ochentero: golpe + zumbido del tubo + flyback + beeps
+    terminalOn: function () {
+      if (!ctx || !sfxOn) return;
+      var t = ctx.currentTime;
+      boom(0.55, 0.4, 520);                                   // "thunk" de encendido
+      var o = ctx.createOscillator(), g = ctx.createGain();   // zumbido grave con wobble (CRT)
+      o.type = "sine";
+      o.frequency.setValueAtTime(64, t);
+      o.frequency.linearRampToValueAtTime(122, t + 0.28);
+      o.frequency.linearRampToValueAtTime(108, t + 0.95);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.3, t + 0.08);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 1.15);
+      o.connect(g); g.connect(sfxBus);
+      o.start(t); o.stop(t + 1.25);
+      var w = ctx.createOscillator(), wg = ctx.createGain();  // silbido de flyback (agudo, suave)
+      w.type = "triangle"; w.frequency.value = 8200;
+      wg.gain.setValueAtTime(0.0001, t);
+      wg.gain.exponentialRampToValueAtTime(0.013, t + 0.18);
+      wg.gain.exponentialRampToValueAtTime(0.0001, t + 1.3);
+      w.connect(wg); wg.connect(sfxBus);
+      w.start(t); w.stop(t + 1.35);
+      setTimeout(function () { blip(523, 523, 0.07, "square", 0.13); }, 720);  // beeps de OK
+      setTimeout(function () { blip(784, 784, 0.10, "square", 0.14); }, 880);
+    },
     bossRoar: function () { blip(110, 35, 0.9, "sawtooth", 0.3); boom(0.9, 0.4, 700); },
     gameover: function () {
       var notes = [392, 330, 262, 196];
