@@ -3,7 +3,7 @@
    pedida. Uso: node scripts/shots.js <logicalW> <logicalH> <dpr> <carpeta>
    Ej. 6.9": node scripts/shots.js 440 956 3 resources/screenshots/6.9
    Las dimensiones de salida = logicalW*dpr x logicalH*dpr. */
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+const { chromium } = require('playwright');
 const fs = require('fs');
 
 const W = parseInt(process.argv[2] || '440', 10);
@@ -82,7 +82,7 @@ async function skipDialogue(page) {
     const b = NX.entities.materialize('boss', w * 0.5, h * 0.20);
     b.hp = b.hpMax * 0.6; b.phase = 1;
     NX.ui.showBoss(true); NX.ui.setBossHp(0.6);
-    NX.ui.setSector('SECTOR 5 // NÚCLEO M.A.D.R.E.');
+    NX.ui.setSector('SECTOR 8 // NÚCLEO M.A.D.R.E.');
     NX.ui.setWave('PROTOCOLO DE DEFENSA TOTAL');
     const p = NX.world.player; p.x = w * 0.5; p.y = h * 0.78;
     NX.input.state.touchMode = true; NX.input.state.move.x = -0.3; NX.input.state.move.y = 0.1;
