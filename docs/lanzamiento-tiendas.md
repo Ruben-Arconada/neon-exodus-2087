@@ -171,3 +171,28 @@ Pasos manuales que quedan (no automatizables desde aquí):
 - [ ] **Android → Play:** crear la app en Play Console (Click Comunicación), activar **Play App Signing**, subir `app-release.aab` a *Internal testing*, **Data safety** ("no se recogen datos") + **IARC**, ficha (de `IOS-DEPLOY.md`, cifras ya corregidas), URL de privacidad (ya publicada), y **assets de Play** (feature graphic 1024×500 + capturas 9:16).
 - [ ] **iOS → PrivacyInfo:** en Xcode, arrastrar `ios/App/App/PrivacyInfo.xcprivacy` al target **App** (marcar *Target Membership*); luego **Product → Archive** → TestFlight (firma e Info.plist ya listos).
 - [ ] **QA en dispositivo real** (iOS y Android) antes de producción.
+
+---
+
+## 12. Visión de producto (dirección futura) — Colección de mini-juegos cyberpunk
+
+**Idea (2026-06-28):** NEON EXODUS 2087 pasa a ser **uno de los mini-juegos** dentro de una **app-colección de temática cyberpunk/synthwave**: muchos mini-juegos atractivos, **precio económico**, para quien le gusta la estética. Hub central que lanza cada juego, identidad neón común.
+
+**Por qué creo que es mejor que apps sueltas (valoración):**
+- **Más valor percibido por poco dinero** → mejor conversión a precio bajo que un juego suelto.
+- **Menos fricción de tienda:** una sola ficha, una revisión, un cuestionario de privacidad/IARC en lugar de N. Y esquiva con holgura la directriz **4.2** de Apple (una colección es claramente "app de verdad").
+- **Reutiliza la tecnología** ya probada (Canvas 2D, audio 100% procedural, wrapper Capacitor, pipeline de build/firma de este repo) → cada mini-juego es barato de añadir.
+- **Retención y "feature":** variedad + "mini-juego nuevo cada mes" da motivo para volver y para que las tiendas lo destaquen.
+- **Marca coherente:** todo bajo el sello neón de Click Comunicación.
+
+**Riesgos a vigilar:**
+- **Alcance:** "muchos juegos muy atractivos" es mucho trabajo. Mejor **lanzar pocos (3–5) muy pulidos** que 15 mediocres (si no, se percibe como shovelware). Crecer con actualizaciones.
+- **Aislamiento técnico:** cada mini-juego debe ser autónomo (su propio namespace, como `NX` aquí) para que uno no rompa a otro. Diseñar un "shell/launcher" + módulos.
+- **Calidad sostenida** > cantidad.
+
+**Monetización (recomendación):** mantener el sello **sin anuncios y sin datos** (es vuestra mayor fortaleza y aprueba rápido). Opción preferida: **gratis con 1–2 mini-juegos de muestra + 1 compra única barata** (p. ej. 2,99 €) que desbloquea toda la colección. Alternativa: de pago directo barato. Evitar ads/analítica en v1 (rompería el "App Privacy = sin datos").
+
+**Impacto en este lanzamiento (DECISIÓN pendiente del usuario):**
+- ¿Publicamos **NEON EXODUS en solitario ya** (como está, flagship) y montamos la colección después? **o**
+- ¿Esperamos y publicamos directamente **la colección** (NEON EXODUS dentro)?
+- Si se va a la colección, el **id de tienda** será el de la colección (p. ej. `com.clickcomun.<colección>`), no `com.clickcomun.neonexodus`; este último quedaría como id interno del módulo. Conviene fijar el nombre/id de la colección **antes** de crear la app en cada consola (el id es permanente).
