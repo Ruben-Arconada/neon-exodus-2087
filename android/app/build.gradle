@@ -6,10 +6,10 @@ def keystoreProps = new Properties()
 if (keystorePropsFile.exists()) { keystoreProps.load(new FileInputStream(keystorePropsFile)) }
 
 android {
-    namespace "com.estudiosietesiete.neonexodus"
+    namespace "com.clickcomun.neonexodus"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.estudiosietesiete.neonexodus"
+        applicationId "com.clickcomun.neonexodus"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

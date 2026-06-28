@@ -22,7 +22,7 @@
   var GC = P.CapacitorGameConnect || P.GameConnect || P.GameServices || P.CapacitorGameServices || null;
   if (!GC) return;
 
-  var LEADERBOARD_ID = "com.estudiosietesiete.neonexodus.highscores";
+  var LEADERBOARD_ID = "com.clickcomun.neonexodus.highscores";
   var signedIn = false;
 
   function signIn() {

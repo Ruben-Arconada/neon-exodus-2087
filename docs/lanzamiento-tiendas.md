@@ -5,7 +5,7 @@
 
 ## 0. Veredicto ejecutivo
 
-- **iOS: casi listo (amarillo).** Plataforma montada, firma de pago (Team E446EVZA4R, bundle `com.estudiosietesiete.neonexodus`), ficha redactada en `IOS-DEPLOY.md`, privacidad cero-datos. Faltan 4 fixes pequeños de cumplimiento + QA en dispositivo real. **Puede ir a TestFlight esta semana.**
+- **iOS: casi listo (amarillo).** Plataforma montada, firma de pago (Team E446EVZA4R, bundle `com.clickcomun.neonexodus`), ficha redactada en `IOS-DEPLOY.md`, privacidad cero-datos. Faltan 4 fixes pequeños de cumplimiento + QA en dispositivo real. **Puede ir a TestFlight esta semana.**
 - **Android: no listo (rojo).** No existe `android/`, ni cuenta Play Console, ni keystore, ni assets de tienda. Es un proyecto entero (esfuerzo L).
 - **Estrategia: dos velocidades.** Enviar iOS ya; abrir Play Console HOY (la verificación de identidad de cuentas nuevas tarda días = camino crítico).
 - **Riesgo nº1 silencioso:** nunca se ha probado en dispositivo real ni en Safari (`docs/qa-informe.md` admite solo Chromium headless). No se firma ningún envío sin la matriz en hardware real.
@@ -24,7 +24,7 @@
 - [ ] **(S) Publicar la política de privacidad como página web HTTPS.** Hoy solo `docs/privacidad.md` en crudo (verificado: no existe `privacidad.html`). Convertir a HTML con el estilo del sitio y publicar en el GitHub Pages ya activo → `https://ruben-arconada.github.io/neon-exodus-2087/privacidad.html`. Usar esa URL en ambas fichas (Apple la exige en ASC; Google en ficha + Data safety).
 - [ ] **(M) QA en DISPOSITIVO REAL (gate de release, NO negociable).** `docs/qa-informe.md:33-34` confiesa solo Chromium headless. Matriz mínima: iPhone real (ya disponible), 1 iPhone pequeño (SE/13 mini), iPad (si se mantiene universal), 2-3 Android reales gama baja/alta. Casos: primer toque desbloquea audio, interrupción por llamada/Siri, background→retorno (audio y pausa), rotación en mitad del jefe, batería baja, memoria, localStorage bloqueado en modo privado. Criterio de salida: 0 crashes en N partidas completas, 60fps estable con pantalla llena de balas, récord persiste tras reinstalar.
 - [ ] **(M) Onboarding jugable en la primera partida.** Hoy la única ayuda es texto estático (`index.html` screen-howto, solo accesible manualmente; `js/ui.js:182`). Los sticks son invisibles hasta que tocas (`js/fx.js` drawSticks). Doble riesgo: percepción 4.2 (revisor táctil que no entiende los controles en 5s) + retención D1. Fix: overlay de controles la PRIMERA vez (flag en localStorage junto a hiscore/settings en `js/main.js`), o micro-tutorial no bloqueante en Sector 1 oleada 1 reutilizando `fx.textPop`: "MUEVE / APUNTA / DASH". Mayor ROI antes de enviar.
-- [ ] **(S) Decidir y fijar identidad de publisher AHORA.** Incoherencia: bundle `com.estudiosietesiete` vs host `github.com/Ruben-Arconada`. En Android el `applicationId` es PERMANENTE tras la primera publicación. Decidir Estudio Siete//Siete (organización) vs persona y fijar un único esquema reverse-DNS para ambas tiendas antes de crear la cuenta Play.
+- [x] **(S) Identidad de publisher FIJADA (2026-06-28).** Bundle id / applicationId = **`com.clickcomun.neonexodus`** en iOS y Android (namespace real de Click Comunicación, igual que WoWeLike `com.clickcomun.wowelike2`). Se descartó `com.estudiosietesiete.*` (era lore del juego, no la empresa). Es el id PERMANENTE para ambas tiendas.
 - [ ] **(S) Email de soporte en ambas fichas.** Hoy solo aparece `jackito777@gmail.com` en `docs/privacidad.md`. Ambas tiendas lo exigen en la ficha.
 
 ## 2. BLOQUEANTES — SOLO iOS
@@ -162,7 +162,7 @@ Buenas noticias para Google Play: **el entorno de build de Android ya existe y e
 **Cuenta de Google Play: YA EXISTE** (Click Comunicación) → bloqueante de cuenta descartado.
 
 Hecho y commiteado en esta sesión:
-- [x] **Plataforma Android + AAB FIRMADO.** `@capacitor/android` + `cap add android`; compile/target SDK **35**, AGP 8.13.1 / Gradle 8.13; `applicationId com.estudiosietesiete.neonexodus` (igual que iOS); versionCode 1 / versionName 1.0.0. Keystore de SUBIDA propio en `android/keystore/` (FUERA del repo; contraseña en `keystore/info.md` — **haz backup**). Salida: `android/app/build/outputs/bundle/release/app-release.aab` (~13 MB, firmado, verificado).
+- [x] **Plataforma Android + AAB FIRMADO.** `@capacitor/android` + `cap add android`; compile/target SDK **35**, AGP 8.13.1 / Gradle 8.13; `applicationId com.clickcomun.neonexodus` (igual que iOS); versionCode 1 / versionName 1.0.0. Keystore de SUBIDA propio en `android/keystore/` (FUERA del repo; contraseña en `keystore/info.md` — **haz backup**). Salida: `android/app/build/outputs/bundle/release/app-release.aab` (~13 MB, firmado, verificado).
 - [x] **Iconos/splash de Android** (`npm run assets` ya hace iOS + Android). Build reproducible: `npm run android:aab` (script `scripts/android-build.sh`).
 - [x] **iOS cumplimiento:** `ITSAppUsesNonExemptEncryption=false`; **iPhone-only** (quitadas orientaciones iPad + `TARGETED_DEVICE_FAMILY="1"`); `PrivacyInfo.xcprivacy` creado (UserDefaults CA92.1).
 - [x] `ios/` y `android/` ahora **versionadas** (su `.gitignore` excluye Pods/build/keystore).

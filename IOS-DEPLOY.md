@@ -50,9 +50,9 @@ En Xcode, panel izquierdo → selecciona el proyecto **App** → pestaña
 
 1. **Team:** elige tu cuenta de desarrollador (tu nombre / tu Apple ID).
    Si no aparece: Xcode → *Settings → Accounts → +* y añade tu Apple ID.
-2. **Bundle Identifier:** cambia `com.estudiosietesiete.neonexodus` por uno
-   tuyo único, p. ej. `com.<tuapellido>.neonexodus`. **Apúntalo**, lo
-   necesitarás en App Store Connect.
+2. **Bundle Identifier:** ya está fijado a **`com.clickcomun.neonexodus`**
+   (namespace de Click Comunicación). No lo cambies: es el mismo id que se usa
+   en Android y el que registrarás en App Store Connect.
 3. Marca **Automatically manage signing** (deja que Xcode cree los perfiles).
 
 Ajustes recomendados (pestaña **General**):
@@ -192,13 +192,13 @@ el plugin. Más estable con el plugin, pero retrocede una versión mayor.
 
 **El cableado JS ya está hecho:** `js/gamecenter.js` detecta el plugin y, si
 está, hace login y envía la puntuación al cerrar partida/victoria
-(leaderboard `com.estudiosietesiete.neonexodus.highscores`). Sin plugin es
+(leaderboard `com.clickcomun.neonexodus.highscores`). Sin plugin es
 inofensivo (no-op), por eso no rompe nada ahora.
 
 **Pasos nativos (en el Mac):**
 1. Xcode → target *App* → **Signing & Capabilities → + Capability → Game Center**.
 2. App Store Connect → tu app → **Features → Game Center** → actívalo y crea un
-   **Leaderboard** con ID `com.estudiosietesiete.neonexodus.highscores` (o el
+   **Leaderboard** con ID `com.clickcomun.neonexodus.highscores` (o el
    que prefieras; si lo cambias, ajústalo también en `js/gamecenter.js`).
 3. **Crítico:** los leaderboards deben **enviarse a revisión junto al binario**
    (añádelos a la versión antes de *Submit*), o el revisor no los verá.

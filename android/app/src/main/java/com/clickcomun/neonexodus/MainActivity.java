@@ -1,4 +1,4 @@
-package com.estudiosietesiete.neonexodus;
+package com.clickcomun.neonexodus;
 
 import com.getcapacitor.BridgeActivity;
 
