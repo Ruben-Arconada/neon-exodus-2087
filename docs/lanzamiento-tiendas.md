@@ -198,3 +198,23 @@ Pasos manuales que quedan (no automatizables desde aquí):
 - La colección tendrá **su propio id** (`com.clickcomun.<colección>`), independiente del de NEON. Fijar ese nombre/id antes de crear esa app (es permanente).
 - Modelo sugerido: **NEON gratis** (gancho) → **colección de pago** barata. El flagship gratis es el mejor anuncio de la colección, y valida la temática/audiencia antes de invertir en muchos juegos.
 - **Importante (anti-4.2 / offline):** esa llamada debe **abrir la URL de la tienda EXTERNAMENTE** (Capacitor Browser / `window.open`), nunca cargar contenido remoto dentro del juego, para no romper el "100% offline / sin datos". Se añade cuando la colección esté publicada, no ahora.
+
+---
+
+## 13. Decisión de precio (2026-06-28)
+
+**NEON EXODUS 2087: GRATIS — 0 €, sin anuncios, sin IAP (v1.0).** Su papel es gancho/adquisición (alcance + reseñas + ranking + validar la estética + base de fans), no ingreso. El precio afecta sobre todo vía **volumen**, no vía comisión: cualquier precio hunde las descargas que alimentan el embudo. Gratis hace creíble el sello "sin ads / sin datos / offline" y neutraliza el "campaña corta para lo que cuesta".
+
+**Colección cyberpunk (futura): GRATIS + 1 compra única de desbloqueo a 2,99 €** (rango 1,99–3,99; banda baja si salen pocos juegos). Estructura: 1–2 mini-juegos de muestra gratis + compra única que desbloquea todo. **Pago único, NO suscripción.** Aquí está el ingreso real (al 85%). *Precio a validar en los primeros meses (cambiarlo es reversible e inmediato).*
+
+**Economía (comisión 15%, IVA gestionado por la tienda):**
+- Neto por venta: 0,99 € → ~0,70 € · 1,99 € → ~1,40 € · **2,99 € → ~2,10 €**.
+- Al 30% sin SBP: 0,99 € → ~0,57 € · 1,99 € → ~1,15 € · 2,99 € → ~1,73 €.
+
+**Acciones derivadas:**
+- [ ] Inscribir la cuenta Apple en el **Small Business Program YA** (el 15% NO es automático; sin inscribirse, Apple cobra 30% → pierdes ~0,13–0,37 €/venta).
+- [ ] Google Play: 15% automático sobre el primer 1M USD/año (sin acción).
+- [ ] Mantener NEON **sin IAP ni ads** para conservar "App Privacy = no se recogen datos".
+- [ ] Fijar el id permanente `com.clickcomun.<coleccion>` antes de crear la app de la colección.
+
+**Incertidumbres:** sin analítica (por privacidad) el embudo solo se mide por proxies (instalaciones/ventas/reseñas); los netos son aproximados (el IVA varía por país UE).
