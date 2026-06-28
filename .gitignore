@@ -4,10 +4,14 @@ node_modules/
 # Build web para Capacitor (se regenera con: npm run build)
 www/
 
-# Capacitor / iOS — la carpeta ios/ se genera en el Mac con `npx cap add ios`.
-# Se ignoran los artefactos pesados; el proyecto Xcode sí puedes versionarlo
-# si quieres, pero por defecto lo dejamos fuera para mantener el repo limpio.
-ios/
+# Capacitor / nativo
+#  Las carpetas ios/ y android/ SÍ se versionan: su configuración de tienda
+#  (Info.plist, signingConfigs, target SDK, manifests de privacidad) debe
+#  persistir. Cada una trae su propio .gitignore para los artefactos pesados
+#  (Pods, build/, .gradle/, *.aab…). Pero NUNCA secretos de firma:
+android/keystore/
+android/local.properties
+android/key.properties
 DerivedData/
 *.xcuserstate
 .DS_Store

@@ -154,3 +154,20 @@ Buenas noticias para Google Play: **el entorno de build de Android ya existe y e
 - ✅ **Receta probada** (de WoWeLike): AGP `8.13.1`, Gradle wrapper `8.13`, `compileSdk/targetSdk = 35`, `minSdk 22`, `JavaVersion.VERSION_17`. AAB con `JAVA_HOME=<openjdk17> ANDROID_HOME=~/Library/Android/sdk ./gradlew :app:bundleRelease --no-daemon`. Patrón de firma: `signingConfigs.release` leyendo keystore/contraseñas de propiedades de Gradle (vía `-P…` o `~/.gradle/gradle.properties`, fuera del repo). Script de referencia: `WoWeLike-inhouse/infra/android-build.sh`.
 
 **Pasos concretos para Neon Exodus en Android** (cuando se aborde): `npm i @capacitor/android && npx cap add android` → ajustar `android/variables.gradle` a compile/target 35 → crear **keystore PROPIO** (NO reutilizar `clickcomun-keystore.jks`, cuyo certificado está a nombre de Xerintel) → cablear `signingConfigs` → `npm run build && npx cap sync android` → `bundleRelease`. Solo falta, además, la **cuenta de Google Play Console** (~25 USD, abrir cuanto antes por la verificación de identidad).
+
+---
+
+## 11. Progreso (sesión 2, 2026-06-28) — Android montado y iOS al día
+
+**Cuenta de Google Play: YA EXISTE** (Click Comunicación) → bloqueante de cuenta descartado.
+
+Hecho y commiteado en esta sesión:
+- [x] **Plataforma Android + AAB FIRMADO.** `@capacitor/android` + `cap add android`; compile/target SDK **35**, AGP 8.13.1 / Gradle 8.13; `applicationId com.estudiosietesiete.neonexodus` (igual que iOS); versionCode 1 / versionName 1.0.0. Keystore de SUBIDA propio en `android/keystore/` (FUERA del repo; contraseña en `keystore/info.md` — **haz backup**). Salida: `android/app/build/outputs/bundle/release/app-release.aab` (~13 MB, firmado, verificado).
+- [x] **Iconos/splash de Android** (`npm run assets` ya hace iOS + Android). Build reproducible: `npm run android:aab` (script `scripts/android-build.sh`).
+- [x] **iOS cumplimiento:** `ITSAppUsesNonExemptEncryption=false`; **iPhone-only** (quitadas orientaciones iPad + `TARGETED_DEVICE_FAMILY="1"`); `PrivacyInfo.xcprivacy` creado (UserDefaults CA92.1).
+- [x] `ios/` y `android/` ahora **versionadas** (su `.gitignore` excluye Pods/build/keystore).
+
+Pasos manuales que quedan (no automatizables desde aquí):
+- [ ] **Android → Play:** crear la app en Play Console (Click Comunicación), activar **Play App Signing**, subir `app-release.aab` a *Internal testing*, **Data safety** ("no se recogen datos") + **IARC**, ficha (de `IOS-DEPLOY.md`, cifras ya corregidas), URL de privacidad (ya publicada), y **assets de Play** (feature graphic 1024×500 + capturas 9:16).
+- [ ] **iOS → PrivacyInfo:** en Xcode, arrastrar `ios/App/App/PrivacyInfo.xcprivacy` al target **App** (marcar *Target Membership*); luego **Product → Archive** → TestFlight (firma e Info.plist ya listos).
+- [ ] **QA en dispositivo real** (iOS y Android) antes de producción.
