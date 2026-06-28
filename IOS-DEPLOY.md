@@ -156,7 +156,7 @@ ALL game assets (code, art, audio, levels, music) are bundled inside the app.
 The game is fully playable OFFLINE — no internet connection is required at any
 point. You can verify this by launching the app in Airplane Mode.
 
-The game offers genuine, lasting entertainment: 5 sectors, 8 enemy types, a
+The game offers genuine, lasting entertainment: 8 sectors, 9 enemy types, two mini-bosses and a
 3-phase final boss, a combo system, power-ups and local high scores. There is
 no browser UI, address bar or web navigation anywhere.
 
@@ -216,7 +216,7 @@ personas. Tú eres VEGA, la mejor runner que ha cruzado un cortafuegos, y esta
 noche entras en la Red para apagarla.
 
 NEON EXODUS 2087 es un arcade de acción synthwave inspirado en el cyberpunk de
-los 80: dispara, esquiva con el dash y encadena combos a través de 5 sectores
+los 80: dispara, esquiva con el dash y encadena combos a través de 8 sectores
 hasta un jefe final de 3 fases, todo bañado en neón, rejillas infinitas y una
 banda sonora retro generada en tiempo real.
 

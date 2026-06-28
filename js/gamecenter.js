@@ -46,8 +46,8 @@
     });
   }
 
-  // Intento de login temprano (no molesta si el usuario lo rechaza)
-  setTimeout(signIn, 1500);
+  // Sin auto-login al arrancar: Apple penaliza los prompts de inicio de sesión
+  // no solicitados. El signIn se hace de forma perezosa al enviar la 1.ª puntuación.
 
   // Envuelve los puntos donde el juego ya conoce la puntuación final
   function wrap(name) {

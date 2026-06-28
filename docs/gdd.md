@@ -21,7 +21,10 @@ Esquivar → disparar → encadenar combo → recoger mejora → liberar sector 
 | 2 | Mercado de Datos | turret | 4 |
 | 3 | Cloacas Cromadas | wraith | 4 |
 | 4 | Torre Helios | tank | 4 |
-| 5 | Núcleo M.A.D.R.E. | jefe (3 fases) | 2 + jefe |
+| 5 | Espejo de Datos | mirror | 4 |
+| 6 | Jardín de Promesas | leech + Centinela (mini-jefe) | 4 |
+| 7 | Memorial de Vega | VEGA original (mini-jefe) | 4 |
+| 8 | Núcleo M.A.D.R.E. | jefe (3 fases) | 2 + jefe |
 
 ## Sistemas
 - **Combo:** ×1 a ×8. Cada 5 bajas sin recibir daño sube el multiplicador; un golpe lo resetea. Riesgo/recompensa puro.

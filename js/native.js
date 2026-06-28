@@ -34,6 +34,19 @@
     });
   } catch (e) {}
 
+  // Botón Atrás de Android: nunca cerrar la app de golpe (lo exige Google Play).
+  // Jugando -> pausa; en cualquier otra pantalla -> vuelve al título.
+  try {
+    App && App.addListener && App.addListener("backButton", function () {
+      try {
+        if (window.NX && NX.game) {
+          if (NX.game.isRunning && NX.game.isRunning() && NX.game.togglePause) { NX.game.togglePause(); return; }
+          if (NX.game.quitToTitle) { NX.game.quitToTitle(); return; }
+        }
+      } catch (e) {}
+    });
+  } catch (e) {}
+
   // Háptica: engancha en los SFX existentes sin tocar el motor
   function hook(obj, name, impact) {
     if (!obj || !obj[name] || !Haptics) return;

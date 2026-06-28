@@ -4,7 +4,7 @@
 > a la Red Neural de HELIOS. Esta noche, una runner va a despertarlas a todas.
 
 Arcade de acción **synthwave ochentero** (twin-stick shooter) creado en una sola
-noche por **Estudio Siete//Siete**: 5 sectores, 8 tipos de enemigo, jefe final de
+noche por **Estudio Siete//Siete**: 8 sectores, 9 tipos de enemigo, 2 mini-jefes y jefe final de
 3 fases, banda sonora sintetizada en tiempo real y una historia completa en
 castellano. Sin dependencias, sin instalación: HTML5 puro.
 
@@ -25,7 +25,7 @@ Consejo: en Safari toca **Compartir → Añadir a pantalla de inicio** y se
 ejecutará a pantalla completa, como una app nativa. Juega con sonido. 🎧
 
 **Opción B — un solo archivo.** [`neon-exodus-2087.html`](neon-exodus-2087.html)
-contiene el juego completo (104 KB, sin conexión): descárgalo y ábrelo con
+contiene el juego completo (~132 KB, sin conexión): descárgalo y ábrelo con
 doble clic en cualquier navegador de escritorio.
 
 **Opción C — local.** Clona el repo y sirve la carpeta con cualquier estático
@@ -62,8 +62,14 @@ procedural, música y guion— se generó sin assets externos.
 ## 🔧 Tecnología
 
 - **Canvas 2D** con pools de objetos, partículas aditivas y fondo synthwave procedural (sol de franjas, skyline con semilla por sector, rejilla en perspectiva).
-- **Web Audio**: 8 temas musicales y todos los efectos sintetizados con osciladores y ruido. Ni un sample.
+- **Web Audio**: 11 temas musicales (cada sector intermedio con arreglo propio) y todos los efectos sintetizados con osciladores y ruido. Ni un sample.
 - **iOS first**: safe areas del Dynamic Island, sticks táctiles flotantes, autopausa, modo pantalla completa al añadir a inicio.
 - Récords y opciones en `localStorage`. 61 fps medidos en viewport de iPhone 14 Pro Max.
+
+## 🚀 Lanzamiento a tiendas
+
+- **Plan punta a punta (App Store + Google Play):** [docs/lanzamiento-tiendas.md](docs/lanzamiento-tiendas.md) — qué falta/sobra, bloqueantes con esfuerzo, pipeline por tienda y estado verificado del toolchain.
+- **Guía iOS detallada:** [IOS-DEPLOY.md](IOS-DEPLOY.md)
+- **Política de privacidad (URL para las fichas):** [privacidad.html](privacidad.html) → https://ruben-arconada.github.io/neon-exodus-2087/privacidad.html
 
 — *Estudio Siete//Siete · Neo-Madrid, 2087 / Tierra, 2026*
